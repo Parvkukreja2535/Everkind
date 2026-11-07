@@ -5,10 +5,10 @@
 -- (service role key, used by the website's API routes) can read or write. Customer,
 -- staff, contractor and admin policies are added with logins in the next phase.
 
-create extension if not exists pgcrypto;
+-- Safe to run more than once: every statement checks whether its object already exists.
 
 -- Admin-editable settings (operating hours, coverage, commission, VAT).
-create table settings (
+create table if not exists settings (
   key text primary key,
   value jsonb not null,
   updated_at timestamptz not null default now()
@@ -19,15 +19,20 @@ insert into settings (key, value) values
   ('instant_clean', '{"hourly_rate_pence": 3500, "minimum_hours": 1}'),
   ('commission', '{"percent_of_ex_vat": 20}'),
   ('vat', '{"registered": false}'),
-  ('payments', '{"enabled": false}');
+  ('payments', '{"enabled": false}')
+on conflict (key) do nothing;
 
-create type booking_status as enum (
-  'requested', 'finding_professional', 'confirmed', 'on_the_way', 'arrived', 'in_progress', 'completed',
-  'escalated', 'cancelled_by_customer', 'cancelled_by_everkind', 'not_fulfilled'
-);
-create type workforce as enum ('employed', 'contractor', 'regulated');
+do $$ begin
+  create type booking_status as enum (
+    'requested', 'finding_professional', 'confirmed', 'on_the_way', 'arrived', 'in_progress', 'completed',
+    'escalated', 'cancelled_by_customer', 'cancelled_by_everkind', 'not_fulfilled'
+  );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create type workforce as enum ('employed', 'contractor', 'regulated');
+exception when duplicate_object then null; end $$;
 
-create table bookings (
+create table if not exists bookings (
   id uuid primary key default gen_random_uuid(),
   reference text not null unique,
   service_slug text not null,
@@ -60,10 +65,10 @@ create table bookings (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index bookings_status_idx on bookings (status, requested_date);
-create index bookings_email_idx on bookings (lower(customer_email));
+create index if not exists bookings_status_idx on bookings (status, requested_date);
+create index if not exists bookings_email_idx on bookings (lower(customer_email));
 
-create table booking_events (
+create table if not exists booking_events (
   id bigint generated always as identity primary key,
   booking_id uuid not null references bookings(id) on delete cascade,
   status booking_status not null,
@@ -72,7 +77,7 @@ create table booking_events (
 );
 
 -- Every email the site generates, sent or not (admin "Sent emails" log).
-create table email_log (
+create table if not exists email_log (
   id bigint generated always as identity primary key,
   booking_id uuid references bookings(id) on delete set null,
   to_address text not null,
@@ -86,7 +91,7 @@ create table email_log (
 );
 
 -- "Notify me" / "Register interest" sign-ups, with consent record (kept 24 months).
-create table service_interest (
+create table if not exists service_interest (
   id bigint generated always as identity primary key,
   service_slug text not null,
   email text not null,
@@ -98,7 +103,7 @@ create table service_interest (
   created_at timestamptz not null default now(),
   delete_after timestamptz not null default (now() + interval '24 months')
 );
-create unique index service_interest_unique on service_interest (service_slug, lower(email)) where unsubscribed_at is null;
+create unique index if not exists service_interest_unique on service_interest (service_slug, lower(email)) where unsubscribed_at is null;
 
 alter table settings enable row level security;
 alter table bookings enable row level security;
@@ -108,4 +113,5 @@ alter table service_interest enable row level security;
 
 create or replace function touch_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
+drop trigger if exists bookings_touch on bookings;
 create trigger bookings_touch before update on bookings for each row execute function touch_updated_at();
