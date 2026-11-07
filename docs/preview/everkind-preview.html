@@ -4,11 +4,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@400;500;600&display=swap">
 <style>
-/* Layout: hospitality-style public pages (spacious, editorial) + Evernote-inspired app shell (sidebar, list/detail). Single light theme by owner decision (no dark mode at launch). */
+/* Layout: spacious public pages + Evernote-inspired app shell (dark sidebar, white canvas, list/detail). Palette: Evernote-style white/grey/near-black with green accent (owner request). Single light theme (no dark mode at launch). */
 :root{
-  --forest:#183D35; --forest-2:#1F4A41; --ivory:#F5F2EA; --ivory-2:#EDE8DC; --sage:#A8B9A5; --sage-tint:#E4EAE1;
-  --champagne:#C5A46D; --champagne-deep:#82632E; --charcoal:#292D2B; --muted:#5C625F; --sage-deep:#5E7461;
-  --line:#D9E0D5; --white:#FFFFFF;
+  --forest:#00842A; --forest-2:#00732A; --ink:#1A1A1A; --ivory:#FFFFFF; --ivory-2:#F8F8F8; --sage:#CFEAD6; --sage-tint:#EEF7F0;
+  --champagne:#00A82D; --champagne-deep:#00842A; --charcoal:#333333; --muted:#6B6B6B; --sage-deep:#00842A;
+  --line:#E6E6E6; --white:#FFFFFF;
   --ok:#2F6B4F; --warn:#8A5A12; --err:#A23B2C; --info:#2E5A73;
   --display:"Playfair Display", Georgia, "Times New Roman", serif;
   --sans:"DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -37,18 +37,18 @@ button,input,select{font:inherit;color:inherit}
 .pbar .note{font-size:13px}
 .views{display:flex;flex-wrap:wrap;gap:6px}
 .views a{font-size:12.5px;text-decoration:none;padding:4px 10px;border-radius:999px;border:1px solid #4A504D;color:var(--ivory)}
-.views a[aria-current="page"]{background:var(--champagne);border-color:var(--champagne);color:var(--charcoal);font-weight:600}
+.views a[aria-current="page"]{background:var(--forest);border-color:var(--forest);color:#fff;font-weight:600}
 
 /* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:var(--r-ctl);font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;border:1px solid transparent;transition:background .2s,color .2s,border-color .2s,transform .2s}
-.btn-primary{background:var(--forest);color:var(--ivory)}
+.btn-primary{background:var(--forest);color:#fff}
 .btn-primary:hover{background:var(--forest-2)}
 .btn-secondary{background:transparent;color:var(--forest);border-color:var(--forest)}
 .btn-secondary:hover{background:var(--sage-tint)}
-.btn-light{background:var(--ivory);color:var(--forest)}
-.btn-light:hover{background:var(--white)}
-.btn-ghost-light{background:transparent;color:var(--ivory);border-color:rgba(245,242,234,.5)}
-.btn-ghost-light:hover{border-color:var(--ivory)}
+.btn-light{background:var(--champagne);color:var(--ink)}
+.btn-light:hover{background:#19B841}
+.btn-ghost-light{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.btn-ghost-light:hover{border-color:#fff}
 .btn-sm{height:36px;padding:0 14px;font-size:14px}
 .btn-lg{height:52px;padding:0 26px;font-size:16px}
 .link{color:var(--forest);font-weight:600;text-decoration:none;border-bottom:1px solid transparent}
@@ -57,12 +57,12 @@ button,input,select{font:inherit;color:inherit}
 /* Chips */
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:3px 10px;border-radius:999px;white-space:nowrap}
 .chip svg{width:13px;height:13px}
-.l-now{background:var(--forest);color:var(--ivory)}
+.l-now{background:var(--forest);color:#fff}
 .l-soon{background:var(--sage-tint);color:var(--forest);border:1px solid var(--sage)}
 .l-planned{background:var(--white);color:var(--muted);border:1px solid var(--line)}
-.l-approval{background:var(--white);color:var(--champagne-deep);border:1px solid var(--champagne)}
+.l-approval{background:#FBF5EA;color:var(--warn);border:1px solid #E5CFA5}
 .s-info{background:#E3ECF1;color:var(--info)} .s-ok{background:#E2EEE7;color:var(--ok)} .s-warn{background:#F4EAD9;color:var(--warn)}
-.s-live{background:var(--forest);color:var(--ivory)} .s-neutral{background:var(--ivory-2);color:var(--muted)}
+.s-live{background:var(--forest);color:#fff} .s-neutral{background:var(--ivory-2);color:var(--muted)}
 
 /* Public nav */
 .nav{background:var(--ivory);border-bottom:1px solid var(--line)}
@@ -77,7 +77,7 @@ button,input,select{font:inherit;color:inherit}
 
 /* Home */
 .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding-block:72px 88px}
-.hero h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,5.6vw,66px);line-height:1.06;color:var(--forest);letter-spacing:-.01em}
+.hero h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,5.6vw,66px);line-height:1.06;color:var(--charcoal);letter-spacing:-.01em}
 .hero .lede{font-size:19px;color:var(--muted);max-width:520px;margin-top:20px}
 .finder{margin-top:32px;display:flex;gap:8px;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:8px;max-width:540px;box-shadow:0 10px 30px -18px rgba(24,61,53,.35)}
 .finder input{flex:1;min-width:0;border:0;outline:0;padding:0 12px;font-size:16px;background:transparent}
@@ -85,26 +85,28 @@ button,input,select{font:inherit;color:inherit}
 .hero-meta span{display:inline-flex;align-items:center;gap:6px}
 .hero-meta svg{width:16px;height:16px;color:var(--sage-deep)}
 .hero-art{position:relative;aspect-ratio:4/4.4;max-width:100%;border-radius:18px;overflow:hidden;background:var(--sage)}
-.hero-art svg.scene{position:absolute;inset:0;width:100%;height:100%}
+.hero-art img.scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .float-card{position:absolute;background:var(--white);border-radius:12px;padding:14px 16px;box-shadow:0 16px 40px -20px rgba(41,45,43,.45);font-size:13.5px;min-width:0}
 .float-card .t{font-weight:600}
 .fc-1{left:6%;bottom:12%;max-width:72%}
 .fc-2{right:5%;top:7%;max-width:56%}
 .photo-note{position:absolute;right:10px;bottom:10px;font-size:11px;color:var(--forest);background:rgba(245,242,234,.85);padding:2px 8px;border-radius:999px}
 
-.ic-band{background:var(--forest);color:var(--ivory)}
-.ic-band .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;padding-block:64px}
+.ic-band{background:var(--ink);color:#fff}
+.ic-band .wrap{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:40px;align-items:center;padding-block:64px}
+.ic-photo{border-radius:14px;overflow:hidden;aspect-ratio:4/3;max-width:100%}
+.ic-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .ic-band .eyebrow{color:var(--champagne)}
 .ic-band h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.6vw,44px);line-height:1.12;margin-top:10px}
-.ic-band p.sub{color:#D5DDD5;margin-top:14px;max-width:560px}
+.ic-band p.sub{color:#CCCCCC;margin-top:14px;max-width:560px}
 .ic-points{display:grid;gap:12px}
-.ic-point{display:flex;gap:12px;align-items:flex-start;border-top:1px solid rgba(197,164,109,.45);padding-top:12px}
+.ic-point{display:flex;gap:12px;align-items:flex-start;border-top:1px solid rgba(0,168,45,.45);padding-top:12px}
 .ic-point svg{width:20px;height:20px;color:var(--champagne);flex:none;margin-top:3px}
 .ic-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
 
 .section{padding-block:96px}
 .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
-.section-head h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.4vw,42px);color:var(--forest);line-height:1.15;margin-top:8px}
+.section-head h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.4vw,42px);color:var(--charcoal);line-height:1.15;margin-top:8px}
 .section-head p{color:var(--muted);max-width:520px;margin-top:10px}
 
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px}
@@ -113,8 +115,14 @@ button,input,select{font:inherit;color:inherit}
 .card:hover .tile svg{transform:scale(1.06)}
 .tile{position:relative;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden}
 .tile svg{width:30%;height:auto;max-height:58%;transition:transform .3s ease}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.card:hover .tile img{transform:scale(1.04)}
+.tile.has-img::after{display:none}
+.tile .chip{z-index:1}
+.tile .chip svg{width:13px;height:13px;max-height:none;transform:none}
+.credit{font-size:12px;color:var(--muted)}
 .tile::after{content:"";position:absolute;left:18px;right:18px;bottom:14px;height:1px;background:var(--champagne);opacity:.8}
-.t0{background:var(--sage-tint);color:var(--forest)} .t1{background:var(--sage);color:var(--forest)} .t2{background:var(--ivory-2);color:var(--forest)} .t3{background:var(--forest);color:var(--champagne)}
+.t0{background:var(--sage-tint);color:var(--forest)} .t1{background:var(--sage);color:var(--forest)} .t2{background:var(--ivory-2);color:var(--forest)} .t3{background:var(--ink);color:var(--champagne)}
 .card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
 .card-body .cat{font-size:12px;color:var(--muted);font-weight:500}
 .card-body h3{font-size:17px;font-weight:600;line-height:1.35}
@@ -146,9 +154,9 @@ button,input,select{font:inherit;color:inherit}
 .trust h3{font-size:17px;margin-top:12px}
 .trust p{font-size:14.5px;color:var(--muted);margin-top:6px}
 
-.hosts{background:var(--sage-tint)}
+.hosts{background:var(--ivory-2)}
 .hosts .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding-block:88px}
-.hosts h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.4vw,42px);color:var(--forest);line-height:1.15;margin-top:8px}
+.hosts h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.4vw,42px);color:var(--charcoal);line-height:1.15;margin-top:8px}
 .price-list{background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:8px 22px}
 .price-row{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
 .price-row:last-child{border-bottom:0}
@@ -159,18 +167,18 @@ button,input,select{font:inherit;color:inherit}
 .faq details[open] summary::after{content:"–"}
 .faq p{color:var(--muted);margin-top:10px;max-width:720px}
 
-.footer{background:var(--forest);color:#D5DDD5;font-size:14px}
+.footer{background:var(--ink);color:#CCCCCC;font-size:14px}
 .footer .wrap{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:32px;padding-block:56px}
-.footer .logo{color:var(--ivory)}
-.footer h4{color:var(--ivory);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}
+.footer .logo{color:#fff}
+.footer h4{color:#fff;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}
 .footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .footer a{text-decoration:none}
-.footer a:hover{color:var(--ivory)}
-.footer .legal{grid-column:1/-1;border-top:1px solid rgba(197,164,109,.35);padding-top:20px;font-size:13px}
+.footer a:hover{color:#fff}
+.footer .legal{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding-top:20px;font-size:13px}
 
 /* Explore */
 .explore-head{padding-block:64px 32px}
-.explore-head h1{font-family:var(--display);font-weight:500;font-size:clamp(38px,5vw,58px);color:var(--forest);line-height:1.08}
+.explore-head h1{font-family:var(--display);font-weight:500;font-size:clamp(38px,5vw,58px);color:var(--charcoal);line-height:1.08}
 .explore-head .lede{color:var(--muted);font-size:18px;margin-top:12px;max-width:640px}
 .search-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .field{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-ctl);height:48px;padding:0 14px;min-width:0}
@@ -189,7 +197,7 @@ button,input,select{font:inherit;color:inherit}
 .cat-nav a:hover{background:var(--sage-tint)}
 .cat-nav a span{color:var(--muted);font-size:13px}
 .cat-section{margin-bottom:56px;scroll-margin-top:120px}
-.cat-section h2{font-family:var(--display);font-weight:500;font-size:30px;color:var(--forest)}
+.cat-section h2{font-family:var(--display);font-weight:500;font-size:30px;color:var(--charcoal)}
 .cat-section .cdesc{color:var(--muted);margin:6px 0 20px;font-size:15px}
 .empty{padding:48px 24px;text-align:center;background:var(--white);border:1px dashed var(--line);border-radius:var(--r-card);color:var(--muted)}
 .label-key{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
@@ -200,7 +208,7 @@ button,input,select{font:inherit;color:inherit}
 .crumbs{font-size:14px;color:var(--muted);padding-block:24px 0}
 .crumbs a{text-decoration:none;color:var(--muted)} .crumbs a:hover{color:var(--forest)}
 .svc{display:grid;grid-template-columns:1.25fr .9fr;gap:56px;padding-block:24px 96px;align-items:start}
-.svc h1{font-family:var(--display);font-weight:500;font-size:clamp(34px,4.4vw,52px);color:var(--forest);line-height:1.1;margin-top:14px}
+.svc h1{font-family:var(--display);font-weight:500;font-size:clamp(34px,4.4vw,52px);color:var(--charcoal);line-height:1.1;margin-top:14px}
 .svc .lede{font-size:18px;color:var(--muted);margin-top:14px;max-width:620px}
 .svc-tile{margin-top:28px;border-radius:16px;aspect-ratio:16/8}
 .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
@@ -233,7 +241,7 @@ button,input,select{font:inherit;color:inherit}
 .total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
 .notice{border-radius:10px;padding:12px 14px;font-size:13.5px;margin-top:14px;display:flex;gap:10px;align-items:flex-start}
 .notice svg{width:18px;height:18px;flex:none;margin-top:2px}
-.n-info{background:#E3ECF1;color:#24485C} .n-warn{background:#F4EAD9;color:#6E480E} .n-gate{background:var(--ivory);border:1px solid var(--champagne);color:var(--charcoal)}
+.n-info{background:#E3ECF1;color:#24485C} .n-warn{background:#F4EAD9;color:#6E480E} .n-gate{background:#FBF5EA;border:1px solid #E5CFA5;color:var(--charcoal)}
 .form-row{display:grid;gap:6px;margin-top:12px}
 .form-row label{font-size:13.5px;font-weight:600}
 .input{height:44px;border:1px solid var(--line);border-radius:var(--r-ctl);padding:0 12px;background:var(--white);width:100%}
@@ -244,14 +252,14 @@ button,input,select{font:inherit;color:inherit}
 
 /* App shell */
 .app{display:grid;grid-template-columns:248px 1fr;min-height:calc(100vh - 44px)}
-.side{background:var(--forest);color:#D5DDD5;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
-.side .logo{color:var(--ivory);font-size:23px;padding:4px 10px 18px}
+.side{background:var(--ink);color:#CCCCCC;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.side .logo{color:#fff;font-size:23px;padding:4px 10px 18px}
 .side .role{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--champagne);padding:0 10px 8px}
-.side button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;color:#D5DDD5;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14.5px}
+.side button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;color:#CCCCCC;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14.5px}
 .side button svg{width:18px;height:18px;flex:none}
 .side button:hover{background:rgba(255,255,255,.06);color:var(--ivory)}
-.side button[aria-current="true"]{background:rgba(197,164,109,.16);color:var(--ivory);box-shadow:inset 2px 0 0 var(--champagne)}
-.side .badge{margin-left:auto;background:var(--champagne);color:var(--charcoal);font-size:11px;font-weight:700;border-radius:999px;padding:0 7px}
+.side button[aria-current="true"]{background:rgba(0,168,45,.18);color:#fff;box-shadow:inset 3px 0 0 var(--champagne)}
+.side .badge{margin-left:auto;background:var(--champagne);color:var(--ink);font-size:11px;font-weight:700;border-radius:999px;padding:0 7px}
 .side .spacer{flex:1}
 .main{min-width:0;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:12px;padding:14px 28px;border-bottom:1px solid var(--line);background:var(--ivory)}
@@ -329,6 +337,7 @@ tr:last-child td{border-bottom:0}
   .nav-links{display:none}
   .menu-btn{display:inline-grid;place-items:center}
   .hero .wrap,.ic-band .wrap,.hosts .wrap,.svc{grid-template-columns:1fr}
+  .ic-photo{display:none}
   .hero .wrap{padding-block:48px 64px;gap:40px}
   .explore-body{grid-template-columns:1fr}
   .cat-nav{position:static;display:flex;overflow-x:auto;gap:6px;padding-bottom:6px}
@@ -354,8 +363,8 @@ tr:last-child td{border-bottom:0}
   .side{display:none}
   .topbar{padding:12px 16px}
   .content{padding:20px 16px}
-  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--forest);padding:6px var(--gutter-r) calc(6px + env(safe-area-inset-bottom,0px)) var(--gutter-l);justify-content:space-around}
-  .tabbar button{background:none;border:0;color:#D5DDD5;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:6px;cursor:pointer;min-width:56px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);padding:6px var(--gutter-r) calc(6px + env(safe-area-inset-bottom,0px)) var(--gutter-l);justify-content:space-around}
+  .tabbar button{background:none;border:0;color:#CCCCCC;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:6px;cursor:pointer;min-width:56px}
   .tabbar button svg{width:20px;height:20px}
   .tabbar button[aria-current="true"]{color:var(--champagne)}
   .footer .wrap{grid-template-columns:1fr}
@@ -487,6 +496,8 @@ const S = [
  {row:43,cat:'childcare',slug:'nanny-daytime-childcare',name:'Nanny / daytime childcare',label:'approval',price:null,model:'Not offered',mode:'gated',desc:'Nanny and daytime childcare need registration analysis and safeguarding. Everkind does not currently offer it.'},
  {row:44,cat:'childcare',slug:'school-collection',name:'School collection / after-school care',label:'approval',price:null,model:'Not offered',mode:'gated',desc:'School collection needs authorised-collection, safeguarding and consent processes. Everkind does not currently offer it.'}
 ];
+const IMG = {1:'1522708323590-d24dbb6b0267',2:'1631049307264-da0ec9d70304',3:'1505693416388-ac5ce068fe85',4:'1586023492125-27b2c045efd7',45:'1581578731548-c64695cc6952',5:'1584622650111-993a426fbf0a',6:'1584820927498-cfe5211fd8bf',7:'1563453392212-326f5e854473',8:'1517677208171-0bc6725a3e60',9:'1562322140-8baeececf3df',10:'1522337360788-8b13dee7a37e',11:'1570172619644-dfd03ed5d881',12:'1616394584738-fc6e612e71b9',13:'1540555700478-4be289fbecef',14:'1604654894610-df63bc536371',15:'1519014816548-bf5fe059798b',16:'1519415510236-718bdfcd89c8',17:'1487412947147-5cebf100ffc2',18:'1599351431202-1e0f0137899a',19:'1503951914875-452162b0f3f1',20:'1621605815971-fbc98d665033',21:'1544161515-4ab6ce6db874',22:'1600334089648-b0d9d3028eb2',23:'1504148455328-c376907d081c',26:'1504148455328-c376907d081c',24:'1616046229478-9901c5536a45',25:'1493809842364-78817add7ffb',27:'1585704032915-c3400ca199e7',28:'1607472586893-edb57bdc0e39',29:'1556909212-d5b604d0c90d',30:'1621905251189-08b45d6a269e',31:'1544724569-5f546fd6f2b5',32:'1621905252507-b35492cc74b4',33:'1626806787461-102c1bfaaea1',34:'1571175443880-49e1d25b2bc5',35:'1560185007-cde436f6a4d0',36:'1632935190508-bd46801c14af',37:'1562259949-e8e7689d7828',38:'1548199973-03cce0bbc87b',39:'1514888286974-6c03e2ca1dba',40:'1573865526739-10659fec78a5',41:'1516734212186-a967f81ad0d7',42:'1503454537195-1dcabb73ffb9',43:'1587654780291-39c9404d746b',44:'1503676260728-1c00da094a0b'};
+const imgSrc = s => 'images/'+IMG[s.row]+'.jpg';
 const LABELS = {
   now:{t:'Available now',cls:'l-now',ic:'check',meaning:'Book in supported London postcodes.'},
   soon:{t:'Coming soon',cls:'l-soon',ic:'clock',meaning:'Planned for an upcoming launch phase.'},
@@ -506,7 +517,7 @@ function priceText(s){
 function serviceCard(s){
   const c = catOf(s.cat);
   return `<a class="card" href="#svc-${s.slug}">
-    <div class="tile ${tone(s.cat)}">${chip(s.label)}${svg(c.icon)}</div>
+    <div class="tile has-img ${tone(s.cat)}"><img src="${imgSrc(s)}" alt="" loading="lazy">${chip(s.label)}</div>
     <div class="card-body">
       <span class="cat">${c.name}${s.addition?' · Everkind service':''}</span>
       <h3>${s.name}</h3>
@@ -517,7 +528,7 @@ function serviceCard(s){
 }
 
 /* ---------- Shared chrome ---------- */
-const logo = (cls='') => `<a class="logo ${cls}" href="#home" aria-label="Everkind home"><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#C5A46D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M12 20c-3.5-1.5-5-4-5-7 3 0 5 2 5 5 0-3 2-5 5-5 0 3-1.5 5.5-5 7z"/></svg><span>Everkind</span></a>`;
+const logo = (cls='') => `<a class="logo ${cls}" href="#home" aria-label="Everkind home"><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#00A82D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M12 20c-3.5-1.5-5-4-5-7 3 0 5 2 5 5 0-3 2-5 5-5 0 3-1.5 5.5-5 7z"/></svg><span>Everkind</span></a>`;
 const publicNav = () => `<header class="nav"><div class="wrap">${logo()}
   <nav class="nav-links" aria-label="Main"><a href="#services">Services</a><a href="#svc-instant-clean">Instant Clean</a><a href="#home-hosts">For hosts</a><a href="#home-how">How it works</a></nav>
   <div class="nav-cta"><a class="btn btn-secondary btn-sm" href="#customer">Sign in</a><a class="btn btn-primary btn-sm" href="#services">Book</a><button class="menu-btn" aria-label="Open menu" data-toast="Menu: full-screen navigation on mobile (preview only)">${svg('menu')}</button></div>
@@ -527,7 +538,7 @@ const footer = () => `<footer class="footer"><div class="wrap">
   <div><h4>Services</h4><ul><li><a href="#services">Explore all services</a></li><li><a href="#svc-instant-clean">Instant Clean</a></li><li><a href="#svc-short-let-1-bed">Short-let cleaning</a></li><li><a href="#svc-furniture-assembly">Furniture assembly</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="#home-hosts">For hosts &amp; property managers</a></li><li><a href="#home">About</a></li><li><a href="#home">Become a professional</a></li><li><a href="#home">Contact</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#home">Terms</a></li><li><a href="#home">Privacy</a></li><li><a href="#home">Cookies</a></li><li><a href="#home">Cancellation policy</a></li></ul></div>
-  <p class="legal">Operating hours 8:00am–8:00pm. Prices shown are proposed London prices including VAT where applicable. This is a design preview.</p>
+  <p class="legal">Photos from Unsplash, used under the Unsplash License, for illustration only. Operating hours 8:00am–8:00pm. Prices shown are proposed London prices including VAT where applicable. This is a design preview.</p>
 </div></footer>`;
 
 /* ---------- Homepage ---------- */
@@ -545,22 +556,11 @@ function home(){
       <div class="hero-meta"><span>${svg('clock')}Open 8am–8pm, every day</span><span>${svg('shield')}Vetted, insured professionals</span><span>${svg('card')}Card held, charged after the job</span></div>
       <p style="margin-top:22px"><a class="link" href="#services">Explore all services →</a></p>
     </div>
-    <div class="hero-art" aria-label="Illustration placeholder for lifestyle photography">
-      <svg class="scene" viewBox="0 0 400 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <rect width="400" height="440" fill="#A8B9A5"/>
-        <rect x="0" y="300" width="400" height="140" fill="#E4EAE1"/>
-        <rect x="40" y="60" width="150" height="190" rx="6" fill="#F5F2EA"/>
-        <rect x="52" y="72" width="60" height="166" fill="#E4EAE1"/><rect x="118" y="72" width="60" height="166" fill="#E4EAE1"/>
-        <path d="M230 300v-120a50 50 0 0 1 100 0v120" fill="#183D35"/>
-        <rect x="210" y="300" width="140" height="10" fill="#183D35"/>
-        <circle cx="300" cy="120" r="30" fill="none" stroke="#C5A46D" stroke-width="2"/>
-        <path d="M70 300c0-30 20-50 40-50s40 20 40 50" fill="#5E7461"/>
-        <rect x="104" y="255" width="12" height="45" fill="#5E7461"/>
-        <path d="M60 360h280" stroke="#C5A46D" stroke-width="1.5"/>
-      </svg>
+    <div class="hero-art" >
+      <img class="scene" src="images/1600210492486-724fe5c67fb0.jpg" alt="A bright, tidy living room with sofa and plants">
       <div class="float-card fc-2"><div class="small" style="color:var(--muted);font-size:12px">Furniture assembly <span class="sample">Sample</span></div><div class="t" style="margin-top:2px">Request received</div><div style="color:var(--muted)">We're finding a professional</div></div>
       <div class="float-card fc-1"><div class="small" style="color:var(--muted);font-size:12px">Instant Clean <span class="sample">Sample</span></div><div class="t" style="margin-top:2px">Cleaner arriving in approximately 35 minutes</div><div style="color:var(--muted);font-size:12.5px">Arrival times are estimates and may change.</div></div>
-      <span class="photo-note">Photography placeholder</span>
+      <span class="photo-note">Photo: Unsplash</span>
     </div>
   </div></section>
 
@@ -571,10 +571,11 @@ function home(){
       <p class="sub">Book an equipped Everkind cleaner by the hour. Pick the chores that matter most and we'll work through them in your order of priority.</p>
       <div class="ic-actions"><a class="btn btn-light btn-lg" href="#svc-instant-clean">Book Instant Clean</a><a class="btn btn-ghost-light btn-lg" href="#svc-instant-clean">What's included</a></div>
     </div>
+    <div class="ic-photo"><img src="images/1527515637462-cff94eecc1ac.jpg" alt="Vacuuming confetti off a carpet after a party" loading="lazy"></div>
     <div class="ic-points">
-      <div class="ic-point">${svg('clock')}<div><b>Estimated arrival shown before you book</b><br><span style="color:#D5DDD5">Based on which cleaners are on duty nearby. Estimates may change.</span></div></div>
-      <div class="ic-point">${svg('pound')}<div><b>Billed by the hour, 1-hour minimum</b><br><span style="color:#D5DDD5">See your total before you confirm. Extra time only with your approval.</span></div></div>
-      <div class="ic-point">${svg('sparkle')}<div><b>Everyday chores, fully equipped</b><br><span style="color:#D5DDD5">Tidying, dishes, kitchen, bathroom, floors, dusting, beds and bins.</span></div></div>
+      <div class="ic-point">${svg('clock')}<div><b>Estimated arrival shown before you book</b><br><span style="color:#CCCCCC">Based on which cleaners are on duty nearby. Estimates may change.</span></div></div>
+      <div class="ic-point">${svg('pound')}<div><b>Billed by the hour, 1-hour minimum</b><br><span style="color:#CCCCCC">See your total before you confirm. Extra time only with your approval.</span></div></div>
+      <div class="ic-point">${svg('sparkle')}<div><b>Everyday chores, fully equipped</b><br><span style="color:#CCCCCC">Tidying, dishes, kitchen, bathroom, floors, dusting, beds and bins.</span></div></div>
     </div>
   </div></section>
 
@@ -583,10 +584,10 @@ function home(){
     <div class="cards">${avail.map(serviceCard).join('')}${serviceCard(S.find(s=>s.slug==='short-let-1-bed'))}</div>
   </div></section>
 
-  <section class="section" style="background:var(--white);border-block:1px solid var(--line)"><div class="wrap">
+  <section class="section" style="background:var(--ivory-2);border-block:1px solid var(--line)"><div class="wrap">
     <div class="section-head"><div><p class="eyebrow">Explore all services</p><h2>One place for your whole home</h2><p>See what's available now and what's on the way. Register your interest and we'll let you know when a service launches near you.</p></div><a class="btn btn-primary" href="#services">Explore all services</a></div>
     <div class="cat-grid">${CATS.map(c=>{const list=cards.filter(s=>s.cat===c.id);const n=list.filter(s=>s.label==='now').length;const lab=n?`${n} available now`:LABELS[list[0].label].t;
-      return `<a class="cat-tile" href="#services" data-cat="${c.id}"><span class="ico ${tone(c.id)}">${svg(c.icon)}</span><span><span class="nm">${c.name}</span><br><span class="ct">${list.length} service${list.length>1?'s':''} · ${lab}</span></span></a>`}).join('')}</div>
+      return `<a class="cat-tile" href="#services" data-cat="${c.id}"><span class="ico t3">${svg(c.icon)}</span><span><span class="nm">${c.name}</span><br><span class="ct">${list.length} service${list.length>1?'s':''} · ${lab}</span></span></a>`}).join('')}</div>
   </div></section>
 
   <section class="section" id="home-how"><div class="wrap">
@@ -752,7 +753,7 @@ function serviceDetail(slug){
         ${chip(s.label)}
         <h1>${s.name}</h1>
         <p class="lede">${s.desc}</p>
-        <div class="tile svc-tile ${tone(s.cat)}">${svg(c.icon)}</div>
+        <div class="tile svc-tile has-img ${tone(s.cat)}"><img src="${imgSrc(s)}" alt="${s.name}"></div><p class="credit" style="margin-top:8px">Illustrative photo from Unsplash</p>
         <div class="facts">
           <div class="fact"><div class="k">Who does the work</div><div class="v">${who}</div></div>
           <div class="fact"><div class="k">How booking works</div><div class="v">${how}</div></div>

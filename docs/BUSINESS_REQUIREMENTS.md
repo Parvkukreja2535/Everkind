@@ -1,5 +1,5 @@
 # Everkind — Business Requirements Document
-**Version 1.0 (Final, consolidated)** · Status: awaiting owner approval · No production code written
+**Version 1.1 (Final, consolidated)** · Status: awaiting owner approval · No production code written
 
 ## Change history
 | Version | Summary |
@@ -9,6 +9,7 @@
 | 0.3 | Contractor request → accept flow; basic B2B accounts; flat-pack as an option; Instant Clean added |
 | 0.4 | Brand identity, design system, layouts |
 | 0.5 | One-stop platform: full catalogue visible, four availability labels, Explore All Services |
+| 1.1 | Evernote-style colour scheme (owner request); real Unsplash photos for every service in the preview |
 | **1.0** | **Final consolidation.** Instant Clean becomes hourly (1-hour minimum, rate set by admin). Arrival is shown as estimates only (no GPS). One set of operating hours, 8am–8pm, for every service. Simple Furniture vs Flat-pack wording. All outstanding minor decisions resolved (section 12). All contradictory older text removed. |
 
 ## How to read this document
@@ -339,20 +340,20 @@ All apps share one shell: a persistent forest-green sidebar, a top bar with sear
 - **Two modes:**
   - The *public website* feels like a premium hospitality and lifestyle brand.
   - The *logged-in apps* feel like calm, organised software, inspired by Evernote's usability principles. Evernote's branding, icons, layouts and visual design are **not** used.
-- **Palette:**
+- **Palette** (v1.1: changed at the owner's request to an Evernote-style scheme: white canvas, light grey surfaces, near-black sidebar, green accent; Evernote's logo, icons and layouts are still not used):
   | Token | Hex | Use |
   |---|---|---|
-  | Forest | #183D35 | Logo, navigation, primary buttons, key elements |
-  | Ivory | #F5F2EA | Backgrounds |
-  | Sage | #A8B9A5 | Secondary panels, chips, accents |
-  | Champagne | #C5A46D | Small premium details |
-  | Charcoal | #292D2B | Text |
-- **Accessibility shades.** Champagne (2.1:1) and sage (1.9:1) are too faint for text on ivory, so supporting shades are used for text:
-  - deep champagne ≈ #82632E
-  - deep sage #5E7461
-  - muted charcoal #5C625F
-  - light sage tint #E4EAE1 and border #D9E0D5
-  - muted status colours: success #2F6B4F, warning #8A5A12, error #A23B2C, info #2E5A73
+  | Green (action) | #00842A | Primary buttons, links, active states (4.9:1 with white text) |
+  | Green (accent) | #00A82D | Icons, highlights, active sidebar marker, badges (decoration only; too faint for small text on white) |
+  | Ink | #1A1A1A | App sidebar, footer, Instant Clean band |
+  | White | #FFFFFF | Page background, cards |
+  | Light grey | #F8F8F8 | Alternate sections, surfaces |
+  | Border | #E6E6E6 | Lines and card borders |
+  | Text | #333333 | Body text and headings |
+  | Muted text | #6B6B6B | Secondary text (5.3:1) |
+  | Light green tint | #EEF7F0 / #CFEAD6 | Selected rows, soft chips |
+  - Status colours: success #2F6B4F, warning #8A5A12, error #A23B2C, info #2E5A73. "Subject to approval" uses a soft amber chip.
+- **Photography:** real photos from Unsplash (Unsplash License: free to use, no attribution required; credited in the footer), one per service. Replace with Everkind's own photoshoot before launch.
 - **Typography:**
   - **Playfair Display** for public headlines and editorial headings only.
   - **DM Sans** for navigation, body text, buttons, forms, prices and all dashboards.
@@ -370,7 +371,6 @@ All apps share one shell: a persistent forest-green sidebar, a top bar with sear
   | Mobile (<640px) | Single column; public full-screen menu + sticky Book button; app bottom tab bar |
   | Tablet | Collapsible icon sidebar |
   | Desktop | Full layouts |
-- **Imagery:** warm, natural, licensed stock for the demo; no AI-generated people. Services without a photo get a branded fallback tile.
 - **Logo:** temporary Playfair "Everkind" wordmark in forest green with a small champagne detail, until a final logo exists.
 - **Other choices:** no dark mode at launch; the public nav turns forest green on scroll.
 
