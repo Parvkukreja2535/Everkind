@@ -450,3 +450,70 @@ All apps share one shell: a persistent forest-green sidebar, a top bar with sear
 - It carries a persistent **"Design preview: no real bookings, payments, availability or arrival estimates"** banner.
 - All figures are labelled "Sample".
 - Buttons that would perform actions show a "Preview only" notice.
+
+## 17. Owner decisions v1.2 (these override earlier sections)
+
+| Topic | Decision | What changes in the build |
+|---|---|---|
+| Instant Clean price | **£35 per hour**; total = £35 × hours booked (1-hour minimum, extra hours added accordingly) | Seeded as the admin-editable rate. Booking shows e.g. 2 hours = £70 |
+| Coverage | **6-mile radius from the City of London** (centre ≈ 51.5155, −0.0922) | Postcode → coordinates (free postcodes.io lookup) → straight-line distance check. Centre and radius are editable in admin. Outside the area: "Not yet in your area" + register interest |
+| Cancellation | 24-hour policy confirmed | No fees are charged while payments are off; the policy text is shown on pages and emails |
+| Logo | Temporary Everkind wordmark approved | — |
+| Contact email | Non-existent placeholder **hello@everkind.example** (`.example` is a reserved domain, so it can never reach a stranger) | Shown on Contact and in the footer; swap for a real address later |
+| Payments | **None for now**: no Stripe, no card details, nothing charged | The booking flow ends at "Confirm booking". Pages say *"No payment is taken online. We'll confirm payment arrangements with you before your appointment."* Database price fields stay, so payments can be added later without redesign. Stripe is removed from this phase. Contractor jobs still need a professional to accept |
+| Booking confirmations | Bookings are accepted and customers are sent confirmations | (1) On-screen confirmation. (2) Booking appears in the customer account with its status timeline. (3) Confirmation email. **Assumption:** real email delivery needs a sending service with a verified domain, which we don't have yet. Until then, every email is generated and saved in an admin **Sent emails** log (and shown to the customer in their account). It's sent for real as soon as a Resend account and domain are connected; no code change needed |
+| Branded imagery | Pictures of staff in Everkind T-shirts and an Everkind-branded van | No such photos exist yet. I'll make **branded mockups**: the Everkind logo placed onto licensed Unsplash photos (a cleaner in a plain T-shirt, a plain white van). Each is labelled "Illustrative" in the image credits. Recommendation: replace with a real photoshoot before marketing, so customers aren't shown people who aren't actually Everkind staff |
+
+**Updated development order:** steps 1–9 of section 14 are unchanged. Step 10 becomes **booking confirmations and the email log** (no payments). Stripe moves to "later".
+
+**Accounts now needed:**
+- Vercel (hosting).
+- Supabase (database and logins).
+- Resend: optional, only when you want emails actually delivered.
+
+**One legal note:** a public site that takes real bookings collects personal data (names, addresses, phone numbers). A privacy policy, cookie notice and ICO registration should be in place before you advertise it (section 16, items 8–9).
+
+## 16. Go-live checklist: owner tasks
+
+**Context.** The preview is a design mockup only; the real website has not been built yet. Going public happens in two stages:
+- **Stage A, pitch demo:** a working site in Stripe test mode.
+- **Stage B, real launch:** taking real money from real customers.
+
+This section lists what the owner must do; the development work itself is section 14.
+
+### Now (to unblock development)
+1. Approve requirements v1.1.
+2. Create free accounts and invite Claude's work into them:
+   - Vercel (hosting): connect the GitHub repo.
+   - Supabase (database and logins): create a project in the London (eu-west-2) region.
+   - Stripe: test mode is enough for the demo.
+   - Resend (emails).
+   - Keys are entered through the secure credential form or Vercel settings, never pasted in chat.
+3. Give five business inputs:
+   - the Instant Clean hourly rate;
+   - the launch postcode districts;
+   - confirmation of the cancellation policy (24 hours free);
+   - a logo, or approval of the temporary wordmark;
+   - a support email address.
+
+### Before the BN3358 demo (Stage A)
+4. Review the service descriptions I draft.
+5. Click through the Vercel preview link of each finished step and report anything wrong.
+
+### Before a real public launch (Stage B)
+6. **Company:** register a limited company at Companies House, open a business bank account, and complete Stripe live verification.
+7. **Domain and email:** buy a domain (e.g. everkind.co.uk) and set up a business email.
+8. **Legal (solicitor):** Terms & Conditions, Privacy Policy, Cookie Policy, cancellation policy, contractor agreement (worker-status review), and employment contracts.
+9. **Data protection:** register with the ICO and pay the annual fee; complete a DPIA for access codes.
+10. **Insurance (broker):** employers' liability (legally required once you employ staff), public liability, treatment liability, and keys/access cover.
+11. **Accountant:** decide on VAT registration and the marketplace VAT treatment; set up payroll and pension auto-enrolment.
+12. **People:**
+    - Recruit employed cleaners and stylists, with right-to-work checks, contracts and training.
+    - Recruit and vet contractors (ID, references, insurance).
+    - Upload their documents into the admin dashboard.
+13. **Content:** replace the Unsplash photos with Everkind's own photography (optional but recommended).
+14. **Soft launch:** run paid pilot bookings with friends and family first; switch Stripe to live only after a successful pilot.
+
+### Verification
+- Stage A is done when every journey works end to end on the Vercel link with Stripe test cards.
+- Stage B is done when items 6–14 are signed off and one real live payment and refund succeed.
