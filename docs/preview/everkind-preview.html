@@ -1,0 +1,920 @@
+<title>Everkind Design Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@400;500;600&display=swap">
+<style>
+/* Layout: spacious public pages + Evernote-inspired app shell (dark sidebar, white canvas, list/detail). Palette: Evernote-style white/grey/near-black with green accent (owner request). Single light theme (no dark mode at launch). */
+:root{
+  --forest:#00842A; --forest-2:#00732A; --ink:#1A1A1A; --ivory:#FFFFFF; --ivory-2:#F8F8F8; --sage:#CFEAD6; --sage-tint:#EEF7F0;
+  --champagne:#00A82D; --champagne-deep:#00842A; --charcoal:#333333; --muted:#6B6B6B; --sage-deep:#00842A;
+  --line:#E6E6E6; --white:#FFFFFF;
+  --ok:#2F6B4F; --warn:#8A5A12; --err:#A23B2C; --info:#2E5A73;
+  --display:"Playfair Display", Georgia, "Times New Roman", serif;
+  --sans:"DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --r-card:12px; --r-ctl:10px;
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px)); --gutter-r:max(16px, env(safe-area-inset-right, 0px));
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ivory)}
+body{color:var(--charcoal);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--charcoal)}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--champagne-deep);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+.tnum{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--sage-deep)}
+.sample{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--champagne-deep);border:1px solid var(--champagne);border-radius:999px;padding:1px 7px;vertical-align:middle;margin-left:6px;background:var(--white)}
+
+/* Preview banner + view switcher */
+.pbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--charcoal);color:var(--ivory)}
+.pbar .wrap{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding-block:8px}
+.pbar strong{color:var(--champagne);font-weight:600}
+.pbar .note{font-size:13px}
+.views{display:flex;flex-wrap:wrap;gap:6px}
+.views a{font-size:12.5px;text-decoration:none;padding:4px 10px;border-radius:999px;border:1px solid #4A504D;color:var(--ivory)}
+.views a[aria-current="page"]{background:var(--forest);border-color:var(--forest);color:#fff;font-weight:600}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:var(--r-ctl);font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;border:1px solid transparent;transition:background .2s,color .2s,border-color .2s,transform .2s}
+.btn-primary{background:var(--forest);color:#fff}
+.btn-primary:hover{background:var(--forest-2)}
+.btn-secondary{background:transparent;color:var(--forest);border-color:var(--forest)}
+.btn-secondary:hover{background:var(--sage-tint)}
+.btn-light{background:var(--champagne);color:var(--ink)}
+.btn-light:hover{background:#19B841}
+.btn-ghost-light{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.btn-ghost-light:hover{border-color:#fff}
+.btn-sm{height:36px;padding:0 14px;font-size:14px}
+.btn-lg{height:52px;padding:0 26px;font-size:16px}
+.link{color:var(--forest);font-weight:600;text-decoration:none;border-bottom:1px solid transparent}
+.link:hover{border-bottom-color:var(--forest)}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.chip svg{width:13px;height:13px}
+.l-now{background:var(--forest);color:#fff}
+.l-soon{background:var(--sage-tint);color:var(--forest);border:1px solid var(--sage)}
+.l-planned{background:var(--white);color:var(--muted);border:1px solid var(--line)}
+.l-approval{background:#FBF5EA;color:var(--warn);border:1px solid #E5CFA5}
+.s-info{background:#E3ECF1;color:var(--info)} .s-ok{background:#E2EEE7;color:var(--ok)} .s-warn{background:#F4EAD9;color:var(--warn)}
+.s-live{background:var(--forest);color:#fff} .s-neutral{background:var(--ivory-2);color:var(--muted)}
+
+/* Public nav */
+.nav{background:var(--ivory);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:16px}
+.logo{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-size:26px;font-weight:500;color:var(--forest);text-decoration:none;letter-spacing:.01em}
+.logo .mark{width:22px;height:22px}
+.nav-links{display:flex;gap:28px;align-items:center;font-size:15px}
+.nav-links a{text-decoration:none;color:var(--charcoal)}
+.nav-links a:hover{color:var(--forest)}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:var(--r-ctl);height:40px;width:44px;cursor:pointer}
+
+/* Home */
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding-block:72px 88px}
+.hero h1{font-family:var(--display);font-weight:500;font-size:clamp(40px,5.6vw,66px);line-height:1.06;color:var(--charcoal);letter-spacing:-.01em}
+.hero .lede{font-size:19px;color:var(--muted);max-width:520px;margin-top:20px}
+.finder{margin-top:32px;display:flex;gap:8px;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:8px;max-width:540px;box-shadow:0 10px 30px -18px rgba(24,61,53,.35)}
+.finder input{flex:1;min-width:0;border:0;outline:0;padding:0 12px;font-size:16px;background:transparent}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;font-size:14px;color:var(--muted)}
+.hero-meta span{display:inline-flex;align-items:center;gap:6px}
+.hero-meta svg{width:16px;height:16px;color:var(--sage-deep)}
+.hero-art{position:relative;aspect-ratio:4/4.4;max-width:100%;border-radius:18px;overflow:hidden;background:var(--sage)}
+.hero-art img.scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.float-card{position:absolute;background:var(--white);border-radius:12px;padding:14px 16px;box-shadow:0 16px 40px -20px rgba(41,45,43,.45);font-size:13.5px;min-width:0}
+.float-card .t{font-weight:600}
+.fc-1{left:6%;bottom:12%;max-width:72%}
+.fc-2{right:5%;top:7%;max-width:56%}
+.photo-note{position:absolute;right:10px;bottom:10px;font-size:11px;color:var(--forest);background:rgba(245,242,234,.85);padding:2px 8px;border-radius:999px}
+
+.ic-band{background:var(--ink);color:#fff}
+.ic-band .wrap{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:40px;align-items:center;padding-block:64px}
+.ic-photo{border-radius:14px;overflow:hidden;aspect-ratio:4/3;max-width:100%}
+.ic-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ic-band .eyebrow{color:var(--champagne)}
+.ic-band h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.6vw,44px);line-height:1.12;margin-top:10px}
+.ic-band p.sub{color:#CCCCCC;margin-top:14px;max-width:560px}
+.ic-points{display:grid;gap:12px}
+.ic-point{display:flex;gap:12px;align-items:flex-start;border-top:1px solid rgba(0,168,45,.45);padding-top:12px}
+.ic-point svg{width:20px;height:20px;color:var(--champagne);flex:none;margin-top:3px}
+.ic-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+
+.section{padding-block:96px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.section-head h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.4vw,42px);color:var(--charcoal);line-height:1.15;margin-top:8px}
+.section-head p{color:var(--muted);max-width:520px;margin-top:10px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 18px 36px -24px rgba(24,61,53,.5)}
+.card:hover .tile svg{transform:scale(1.06)}
+.tile{position:relative;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden}
+.tile svg{width:30%;height:auto;max-height:58%;transition:transform .3s ease}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.card:hover .tile img{transform:scale(1.04)}
+.tile.has-img::after{display:none}
+.tile .chip{z-index:1}
+.tile .chip svg{width:13px;height:13px;max-height:none;transform:none}
+.credit{font-size:12px;color:var(--muted)}
+.tile::after{content:"";position:absolute;left:18px;right:18px;bottom:14px;height:1px;background:var(--champagne);opacity:.8}
+.t0{background:var(--sage-tint);color:var(--forest)} .t1{background:var(--sage);color:var(--forest)} .t2{background:var(--ivory-2);color:var(--forest)} .t3{background:var(--ink);color:var(--champagne)}
+.card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card-body .cat{font-size:12px;color:var(--muted);font-weight:500}
+.card-body h3{font-size:17px;font-weight:600;line-height:1.35}
+.card-body .desc{font-size:14px;color:var(--muted);line-height:1.5}
+.card-foot{margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px}
+.price{font-weight:600;color:var(--charcoal)}
+.price.dim{font-weight:500;color:var(--muted)}
+.card-foot .arrow{color:var(--forest);font-weight:600}
+.tile .chip{position:absolute;top:12px;left:12px}
+
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.cat-tile{display:flex;gap:14px;align-items:center;padding:18px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);text-decoration:none;transition:border-color .2s,transform .2s}
+.cat-tile:hover{border-color:var(--forest);transform:translateY(-2px)}
+.cat-tile .ico{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;flex:none}
+.cat-tile .ico svg{width:24px;height:24px}
+.cat-tile .nm{font-weight:600}
+.cat-tile .ct{font-size:13px;color:var(--muted)}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.step{border-top:1px solid var(--champagne);padding-top:18px}
+.step .n{font-family:var(--display);font-size:30px;color:var(--champagne-deep)}
+.step h3{font-size:18px;margin-top:6px}
+.step p{color:var(--muted);margin-top:8px;font-size:15px}
+.note-box{margin-top:32px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:20px 22px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;font-size:14.5px}
+.note-box b{display:block;color:var(--forest);margin-bottom:4px}
+
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.trust div svg{width:26px;height:26px;color:var(--sage-deep)}
+.trust h3{font-size:17px;margin-top:12px}
+.trust p{font-size:14.5px;color:var(--muted);margin-top:6px}
+
+.hosts{background:var(--ivory-2)}
+.hosts .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding-block:88px}
+.hosts h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,3.4vw,42px);color:var(--charcoal);line-height:1.15;margin-top:8px}
+.price-list{background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:8px 22px}
+.price-row{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.price-row:last-child{border-bottom:0}
+
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";color:var(--forest);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{color:var(--muted);margin-top:10px;max-width:720px}
+
+.footer{background:var(--ink);color:#CCCCCC;font-size:14px}
+.footer .wrap{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:32px;padding-block:56px}
+.footer .logo{color:#fff}
+.footer h4{color:#fff;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}
+.footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.footer a{text-decoration:none}
+.footer a:hover{color:#fff}
+.footer .legal{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding-top:20px;font-size:13px}
+
+/* Explore */
+.explore-head{padding-block:64px 32px}
+.explore-head h1{font-family:var(--display);font-weight:500;font-size:clamp(38px,5vw,58px);color:var(--charcoal);line-height:1.08}
+.explore-head .lede{color:var(--muted);font-size:18px;margin-top:12px;max-width:640px}
+.search-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.field{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-ctl);height:48px;padding:0 14px;min-width:0}
+.field:focus-within{border-color:var(--forest);box-shadow:0 0 0 3px var(--sage-tint)}
+.field svg{width:18px;height:18px;color:var(--muted);flex:none}
+.field input{border:0;outline:0;background:transparent;font-size:15.5px;width:100%;min-width:0}
+.search-row .grow{flex:1 1 320px}
+.search-row .pc{flex:0 1 200px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.fchip{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--white);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.fchip[aria-pressed="true"]{background:var(--forest);color:var(--ivory);border-color:var(--forest)}
+.fchip .c{font-size:12px;opacity:.75}
+.explore-body{display:grid;grid-template-columns:220px 1fr;gap:40px;padding-bottom:96px}
+.cat-nav{position:sticky;top:110px;align-self:start;display:grid;gap:2px}
+.cat-nav a{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;text-decoration:none;font-size:14.5px;color:var(--charcoal)}
+.cat-nav a:hover{background:var(--sage-tint)}
+.cat-nav a span{color:var(--muted);font-size:13px}
+.cat-section{margin-bottom:56px;scroll-margin-top:120px}
+.cat-section h2{font-family:var(--display);font-weight:500;font-size:30px;color:var(--charcoal)}
+.cat-section .cdesc{color:var(--muted);margin:6px 0 20px;font-size:15px}
+.empty{padding:48px 24px;text-align:center;background:var(--white);border:1px dashed var(--line);border-radius:var(--r-card);color:var(--muted)}
+.label-key{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
+.label-key div{font-size:13.5px;color:var(--muted)}
+.label-key .chip{margin-bottom:6px}
+
+/* Service detail */
+.crumbs{font-size:14px;color:var(--muted);padding-block:24px 0}
+.crumbs a{text-decoration:none;color:var(--muted)} .crumbs a:hover{color:var(--forest)}
+.svc{display:grid;grid-template-columns:1.25fr .9fr;gap:56px;padding-block:24px 96px;align-items:start}
+.svc h1{font-family:var(--display);font-weight:500;font-size:clamp(34px,4.4vw,52px);color:var(--charcoal);line-height:1.1;margin-top:14px}
+.svc .lede{font-size:18px;color:var(--muted);margin-top:14px;max-width:620px}
+.svc-tile{margin-top:28px;border-radius:16px;aspect-ratio:16/8}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.fact{background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px;font-size:14px}
+.fact .k{color:var(--muted);font-size:12.5px}
+.fact .v{font-weight:600;margin-top:2px}
+.block{margin-top:36px}
+.block h2{font-size:20px;font-weight:600;color:var(--forest);margin-bottom:12px}
+.ticks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ticks li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.ticks svg{width:18px;height:18px;flex:none;margin-top:3px}
+.ticks.yes svg{color:var(--ok)} .ticks.no svg{color:var(--err)}
+.panel{position:sticky;top:110px;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 20px 40px -32px rgba(24,61,53,.45)}
+.panel h3{font-size:18px}
+.panel .big{font-size:28px;font-weight:600;margin-top:6px}
+.panel .small{font-size:13.5px;color:var(--muted)}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--r-ctl);padding:12px 14px;margin-top:10px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--forest);background:var(--sage-tint)}
+.opt input{margin-top:4px;accent-color:var(--forest)}
+.opt .on{font-weight:600}
+.opt .od{font-size:13.5px;color:var(--muted)}
+.lbl{display:block;font-size:13.5px;font-weight:600;margin:18px 0 8px}
+.tasks{display:grid;gap:6px}
+.task{display:flex;align-items:center;gap:10px;font-size:14.5px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--white)}
+.task input{accent-color:var(--forest)}
+.task .ord{margin-left:auto;font-size:12px;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{height:38px;min-width:54px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--white);cursor:pointer;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--forest);color:var(--ivory);border-color:var(--forest)}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.notice{border-radius:10px;padding:12px 14px;font-size:13.5px;margin-top:14px;display:flex;gap:10px;align-items:flex-start}
+.notice svg{width:18px;height:18px;flex:none;margin-top:2px}
+.n-info{background:#E3ECF1;color:#24485C} .n-warn{background:#F4EAD9;color:#6E480E} .n-gate{background:#FBF5EA;border:1px solid #E5CFA5;color:var(--charcoal)}
+.form-row{display:grid;gap:6px;margin-top:12px}
+.form-row label{font-size:13.5px;font-weight:600}
+.input{height:44px;border:1px solid var(--line);border-radius:var(--r-ctl);padding:0 12px;background:var(--white);width:100%}
+.input:focus{outline:0;border-color:var(--forest);box-shadow:0 0 0 3px var(--sage-tint)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin-top:12px;color:var(--muted)}
+.check input{margin-top:3px;accent-color:var(--forest)}
+.panel .btn{width:100%;margin-top:18px}
+
+/* App shell */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:calc(100vh - 44px)}
+.side{background:var(--ink);color:#CCCCCC;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.side .logo{color:#fff;font-size:23px;padding:4px 10px 18px}
+.side .role{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--champagne);padding:0 10px 8px}
+.side button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;color:#CCCCCC;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14.5px}
+.side button svg{width:18px;height:18px;flex:none}
+.side button:hover{background:rgba(255,255,255,.06);color:var(--ivory)}
+.side button[aria-current="true"]{background:rgba(0,168,45,.18);color:#fff;box-shadow:inset 3px 0 0 var(--champagne)}
+.side .badge{margin-left:auto;background:var(--champagne);color:var(--ink);font-size:11px;font-weight:700;border-radius:999px;padding:0 7px}
+.side .spacer{flex:1}
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:12px;padding:14px 28px;border-bottom:1px solid var(--line);background:var(--ivory)}
+.topbar .field{flex:1;max-width:460px;height:40px}
+.topbar .icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--white);display:grid;place-items:center;cursor:pointer}
+.topbar .icon-btn svg{width:18px;height:18px}
+.avatar{width:36px;height:36px;border-radius:999px;background:var(--sage);color:var(--forest);display:grid;place-items:center;font-weight:700;font-size:14px}
+.content{padding:28px;display:grid;gap:24px;align-content:start}
+.page-title{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.page-title h1{font-size:26px;font-weight:600;color:var(--charcoal)}
+.page-title p{color:var(--muted);font-size:14.5px;margin-top:4px}
+.box{background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:20px;min-width:0}
+.box h2{font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
+.grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+.grid-2b{display:grid;grid-template-columns:1fr 1.25fr;gap:24px}
+.eta{display:flex;align-items:center;gap:14px;margin:6px 0 4px}
+.eta .num{font-size:30px;font-weight:600;color:var(--forest)}
+.disclaim{font-size:12.5px;color:var(--muted)}
+.row-list{display:grid}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px 16px;padding:14px 4px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:6px}
+.row:last-child{border-bottom:0}
+.row:hover{background:var(--ivory)}
+.row[aria-selected="true"]{background:var(--sage-tint)}
+.row .t{font-weight:600;font-size:15px}
+.row .s{font-size:13.5px;color:var(--muted)}
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.timeline li{position:relative;padding:0 0 18px 28px;font-size:14.5px}
+.timeline li::before{content:"";position:absolute;left:6px;top:7px;width:10px;height:10px;border-radius:999px;background:var(--line);border:2px solid var(--white);box-shadow:0 0 0 1px var(--line)}
+.timeline li::after{content:"";position:absolute;left:10px;top:20px;bottom:0;width:2px;background:var(--line)}
+.timeline li:last-child::after{display:none}
+.timeline li.done::before{background:var(--ok);box-shadow:0 0 0 1px var(--ok)}
+.timeline li.now::before{background:var(--forest);box-shadow:0 0 0 4px var(--sage-tint)}
+.timeline .w{color:var(--muted);font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;text-align:right}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+.kpi .k{font-size:12.5px;color:var(--muted);min-height:34px}
+.kpi .v{font-size:26px;font-weight:600;margin-top:4px}
+.kpi .d{font-size:12px;color:var(--muted);margin-top:2px}
+.att{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.att:last-child{border-bottom:0}
+.att .dot{width:8px;height:8px;border-radius:999px;margin-top:8px;flex:none}
+.att .t{font-weight:600;font-size:14.5px}
+.att .s{font-size:13px;color:var(--muted)}
+.att .btn{margin-left:auto;flex:none}
+.crew{display:grid;gap:10px}
+.crew-row{display:flex;align-items:center;gap:12px;font-size:14px}
+.crew-row .avatar{width:32px;height:32px;font-size:12.5px}
+.crew-row .chip{margin-left:auto}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.toggle{width:38px;height:22px;border-radius:999px;background:var(--line);position:relative;border:0;cursor:pointer;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:999px;background:var(--white);transition:left .2s}
+.toggle[aria-checked="true"]{background:var(--forest)}
+.toggle[aria-checked="true"]::after{left:19px}
+.toggle:disabled{opacity:.45;cursor:not-allowed}
+.placeholder{padding:48px 24px;text-align:center;color:var(--muted);background:var(--white);border:1px dashed var(--line);border-radius:var(--r-card)}
+
+.tabbar{display:none}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--charcoal);color:var(--ivory);padding:12px 18px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* Responsive */
+@media (max-width:1080px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .trust{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:960px){
+  .nav-links{display:none}
+  .menu-btn{display:inline-grid;place-items:center}
+  .hero .wrap,.ic-band .wrap,.hosts .wrap,.svc{grid-template-columns:1fr}
+  .ic-photo{display:none}
+  .hero .wrap{padding-block:48px 64px;gap:40px}
+  .explore-body{grid-template-columns:1fr}
+  .cat-nav{position:static;display:flex;overflow-x:auto;gap:6px;padding-bottom:6px}
+  .cat-nav a{white-space:nowrap;border:1px solid var(--line);background:var(--white)}
+  .panel{position:static}
+  .grid-2,.grid-2b{grid-template-columns:1fr}
+  .app{grid-template-columns:72px 1fr}
+  .side{padding:16px 10px}
+  .side .logo span,.side .role,.side button span,.side .badge{display:none}
+  .side .logo{padding:4px 0 16px;justify-content:center}
+  .side button{justify-content:center}
+  .footer .wrap{grid-template-columns:1fr 1fr}
+  .label-key{grid-template-columns:1fr 1fr}
+}
+@media (max-width:680px){
+  .section{padding-block:64px}
+  .steps,.note-box,.facts{grid-template-columns:1fr}
+  .trust{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .nav-cta .btn-secondary{display:none}
+  .fc-1{left:5%;max-width:86%} .fc-2{max-width:76%}
+  .app{grid-template-columns:1fr;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  .side{display:none}
+  .topbar{padding:12px 16px}
+  .content{padding:20px 16px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);padding:6px var(--gutter-r) calc(6px + env(safe-area-inset-bottom,0px)) var(--gutter-l);justify-content:space-around}
+  .tabbar button{background:none;border:0;color:#CCCCCC;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:6px;cursor:pointer;min-width:56px}
+  .tabbar button svg{width:20px;height:20px}
+  .tabbar button[aria-current="true"]{color:var(--champagne)}
+  .footer .wrap{grid-template-columns:1fr}
+  .sticky-book{display:flex}
+}
+.sticky-book{display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ivory);border-top:1px solid var(--line);padding:10px var(--gutter-r) calc(10px + env(safe-area-inset-bottom,0px)) var(--gutter-l);gap:10px}
+.sticky-book .btn{flex:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="pbar" role="region" aria-label="Preview notice">
+  <div class="wrap">
+    <p class="note"><strong>Design preview.</strong> Not live: no real bookings, payments, staff availability or arrival estimates. Figures marked <em>Sample</em> are illustrative.</p>
+    <nav class="views" aria-label="Preview screens">
+      <a href="#home">Homepage</a>
+      <a href="#services">Explore all services</a>
+      <a href="#svc-instant-clean">Service pages</a>
+      <a href="#customer">Customer dashboard</a>
+      <a href="#admin">Admin dashboard</a>
+    </nav>
+  </div>
+</div>
+
+<div id="view"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- Icons (simple line icons drawn for this preview) ---------- */
+const I = {
+  sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+  scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 8.6L20 20M8.6 15.4L20 4"/>',
+  comb:'<path d="M4 7h16v4H4z"/><path d="M6 11v6M9 11v6M12 11v6M15 11v6M18 11v6"/>',
+  leaf:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l8-8"/>',
+  hammer:'<path d="M14 6l4 4-2 2-4-4z"/><path d="M12 8L4 16l2 2 8-8"/><path d="M15 5l2-2 4 4-2 2"/>',
+  drop:'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
+  zap:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  flame:'<path d="M12 3c1 4 5 6 5 11a5 5 0 0 1-10 0c0-3 2-4 2-7 1 1 2 2 3 4 1-3 0-6 0-8z"/>',
+  washer:'<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6h2"/>',
+  snow:'<path d="M12 2v20M4 7l16 10M20 7L4 17"/><path d="M9 4l3 2 3-2M9 20l3-2 3 2"/>',
+  bug:'<rect x="8" y="7" width="8" height="12" rx="4"/><path d="M12 7V4M9 4l1.5 3M15 4l-1.5 3M4 11h4M16 11h4M4 16h4M16 16h4"/>',
+  roller:'<rect x="4" y="3" width="14" height="6" rx="1.5"/><path d="M18 6h2v5h-8v3"/><rect x="10" y="14" width="4" height="7" rx="1"/>',
+  paw:'<circle cx="7" cy="9" r="1.8"/><circle cx="11" cy="6" r="1.8"/><circle cx="15" cy="6.5" r="1.8"/><circle cx="18" cy="10" r="1.8"/><path d="M8 16c0-3 2-5 4-5s5 2 5 5-2 4-4.5 3.5S8 19 8 16z"/>',
+  child:'<circle cx="12" cy="6" r="3"/><path d="M8 21v-6l-3-3M16 21v-6l3-3M8 15h8v-3a4 4 0 0 0-8 0z"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  pin:'<path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  card:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-4 3-6 6.5-6s6 2 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.5 0 4 1.5 4.5 4.5"/>',
+  check:'<path d="M5 12l4 4 10-10"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+  building:'<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/>',
+  pound:'<path d="M16 6.5A4 4 0 0 0 9 9v11M6 13h8M6 20h12"/>',
+  heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l2 2M15 8l2 2"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>'
+};
+const svg = (n, cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+
+/* ---------- Catalogue: 44 workbook rows + Instant Clean (source: Everkind investor workbook, Service Catalogue sheet) ---------- */
+const CATS = [
+  {id:'cleaning', name:'Cleaning', icon:'sparkle', desc:'Short-let turnovers, everyday help and, later, deep and end-of-tenancy cleans by Everkind\'s own team.'},
+  {id:'beauty', name:'Beauty', icon:'scissors', desc:'Hair, nails and treatments at home from Everkind\'s employed salon team.'},
+  {id:'barbering', name:'Barbering', icon:'comb', desc:'Cuts and beard work at home by Everkind barbers.'},
+  {id:'wellness', name:'Wellness', icon:'leaf', desc:'Massage by independent, qualified and insured therapists.'},
+  {id:'handyman', name:'Handyman', icon:'hammer', desc:'Fixed-scope jobs around the home by vetted independent professionals.'},
+  {id:'plumbing', name:'Plumbing', icon:'drop', desc:'Common plumbing repairs with written quotes before work begins.'},
+  {id:'electrical', name:'Electrical', icon:'zap', desc:'Electrical work by qualified electricians only, once approvals are in place.'},
+  {id:'gas', name:'Gas services', icon:'flame', desc:'Gas work may only be carried out by Gas Safe registered engineers.'},
+  {id:'appliance', name:'Appliance repair', icon:'washer', desc:'Diagnosis for household appliances, with parts and repairs quoted first.'},
+  {id:'ac', name:'Air conditioning', icon:'snow', desc:'Servicing by F-Gas certified specialists.'},
+  {id:'pest', name:'Pest control', icon:'bug', desc:'Inspection and treatment by trained specialists.'},
+  {id:'painting', name:'Painting & decorating', icon:'roller', desc:'Room painting with a survey and written scope.'},
+  {id:'pet', name:'Pet care', icon:'paw', desc:'Walks, visits and sitting by insured pet-care providers.'},
+  {id:'childcare', name:'Childcare', icon:'child', desc:'Childcare requires safeguarding checks and registration review before it can be offered.'}
+];
+// label: now | soon | planned | approval ; mode: employed | contractor | gated
+const S = [
+ {row:1,cat:'cleaning',slug:'short-let-studio',name:'Short-let / Airbnb turnover clean – studio',label:'now',price:'£75',model:'Fixed price per turnover',mode:'employed',desc:'A standard reset between guests for studio flats, following your property checklist with photo confirmation.'},
+ {row:2,cat:'cleaning',slug:'short-let-1-bed',name:'Short-let / Airbnb turnover clean – 1 bedroom',label:'now',price:'£95',model:'Fixed price per turnover',mode:'employed',desc:'Turnover clean for one-bedroom short-lets, scheduled between check-out and check-in.'},
+ {row:3,cat:'cleaning',slug:'short-let-2-bed',name:'Short-let / Airbnb turnover clean – 2 bedroom',label:'now',price:'£115',model:'Fixed price per turnover',mode:'employed',desc:'Turnover clean for two-bedroom short-lets. Extra bathrooms or heavy soiling are priced separately.'},
+ {row:4,cat:'cleaning',slug:'short-let-3-bed',name:'Short-let / Airbnb turnover clean – 3 bedroom',label:'now',price:'£145',model:'Fixed price per turnover',mode:'employed',desc:'Turnover clean for three-bedroom short-lets, with linen handled to your property rules.'},
+ {row:45,cat:'cleaning',slug:'instant-clean',name:'Instant Clean',label:'now',price:'Hourly rate',model:'Billed by the hour, 1-hour minimum',mode:'employed',desc:'On-demand help with everyday chores. An equipped Everkind cleaner comes to you and works through the tasks you choose.',addition:true},
+ {row:5,cat:'cleaning',slug:'regular-domestic-cleaning',name:'Regular domestic cleaning',label:'soon',price:'£28/hr',model:'Hourly, 2-hour minimum',mode:'employed',desc:'Recurring home cleaning by the same trained Everkind team.'},
+ {row:6,cat:'cleaning',slug:'deep-cleaning',name:'Deep cleaning',label:'soon',price:'£180',model:'From price, scoped after a survey',mode:'employed',desc:'A thorough top-to-bottom clean, scoped and priced after a short survey.'},
+ {row:7,cat:'cleaning',slug:'end-of-tenancy-cleaning',name:'End-of-tenancy cleaning',label:'soon',price:'£220',model:'From price, by size and inventory',mode:'employed',desc:'A detailed move-out clean built around your inventory, with a re-clean policy.'},
+ {row:8,cat:'cleaning',slug:'laundry-linen-changeover',name:'Laundry / linen changeover',label:'soon',price:'£25',model:'Per property or load',mode:'employed',desc:'Linen changeover and laundry for short-let properties.'},
+ {row:9,cat:'beauty',slug:'womens-haircut',name:'Women\'s haircut / trim',label:'now',price:'£65',model:'Fixed price per appointment',mode:'employed',desc:'A cut or trim at home by an Everkind stylist, with a consultation first.'},
+ {row:10,cat:'beauty',slug:'blow-dry',name:'Blow-dry / styling',label:'now',price:'£45',model:'Fixed price per appointment',mode:'employed',desc:'Blow-dry and styling at home, timed by hair length.'},
+ {row:11,cat:'beauty',slug:'basic-facial',name:'Basic facial',label:'soon',price:'£65',model:'Fixed price per appointment',mode:'employed',desc:'A cleansing, refreshing facial at home with consultation and consent.'},
+ {row:12,cat:'beauty',slug:'premium-facial',name:'Premium facial',label:'soon',price:'£90',model:'Fixed price per appointment',mode:'employed',desc:'A longer facial using approved treatments only. No medical claims.'},
+ {row:13,cat:'beauty',slug:'waxing',name:'Waxing – arms / legs / underarms',label:'soon',price:'£35',model:'From price, by area',mode:'employed',desc:'Arms, legs or underarms, with patch testing where needed.'},
+ {row:14,cat:'beauty',slug:'manicure',name:'Manicure',label:'now',price:'£40',model:'Fixed price per appointment',mode:'employed',desc:'Shaping, cuticle care and polish at home, with allergy screening.'},
+ {row:15,cat:'beauty',slug:'gel-manicure',name:'Gel manicure',label:'soon',price:'£48',model:'Fixed price per appointment',mode:'employed',desc:'Long-lasting gel colour with safe removal guidance.'},
+ {row:16,cat:'beauty',slug:'pedicure',name:'Pedicure',label:'soon',price:'£48',model:'Fixed price per appointment',mode:'employed',desc:'Foot care and polish at home. Not a medical foot-care service.'},
+ {row:17,cat:'beauty',slug:'occasion-makeup',name:'Party / occasion makeup',label:'soon',price:'£95',model:'Per appointment, with travel/time bands',mode:'employed',desc:'Makeup for parties and occasions, with early or late appointments by arrangement.'},
+ {row:18,cat:'barbering',slug:'mens-haircut',name:'Men\'s haircut',label:'now',price:'£45',model:'Fixed price per appointment',mode:'employed',desc:'A sharp cut at home by an Everkind barber.'},
+ {row:19,cat:'barbering',slug:'haircut-and-beard-trim',name:'Haircut and beard trim',label:'now',price:'£58',model:'Fixed price per appointment',mode:'employed',desc:'Haircut plus beard trim and shaping in one visit.'},
+ {row:20,cat:'barbering',slug:'beard-trim',name:'Beard trim / shaping',label:'soon',price:'£28',model:'Fixed price per appointment',mode:'employed',desc:'Beard trim and shaping as a standalone appointment.'},
+ {row:21,cat:'wellness',slug:'swedish-massage',name:'Swedish / relaxation massage',label:'planned',price:'£90',model:'60 minutes',mode:'contractor',desc:'A 60-minute relaxation massage by an independent, qualified therapist.'},
+ {row:22,cat:'wellness',slug:'deep-tissue-massage',name:'Deep-tissue massage',label:'planned',price:'£100',model:'60 minutes',mode:'contractor',desc:'A 60-minute deep-tissue massage by a qualified therapist, with health screening.'},
+ {row:23,cat:'handyman',slug:'furniture-assembly',name:'Furniture assembly',label:'now',price:'£65',model:'First hour, then approved extra time',mode:'contractor',desc:'Assembly by a vetted independent professional. Choose standard furniture or boxed flat-pack when you book.',flatpack:true},
+ {row:26,cat:'handyman',slug:'flat-pack-furniture-assembly',name:'Flat-pack furniture assembly',label:'now',price:'£65/hr',model:'Hourly, 1-hour minimum',mode:'contractor',desc:'Option within Furniture assembly.',hiddenCard:true},
+ {row:24,cat:'handyman',slug:'picture-mirror-shelf-hanging',name:'Picture / mirror / shelf hanging',label:'now',price:'£55',model:'Fixed price per job, wall and weight limits apply',mode:'contractor',desc:'Hanging pictures, mirrors and shelves, with wall-type and weight checks.'},
+ {row:25,cat:'handyman',slug:'curtain-rail-blind-installation',name:'Curtain rail / blind installation',label:'now',price:'£75',model:'Fixed price per job, survey if complex',mode:'contractor',desc:'Fitting curtain rails and blinds, with a survey for complex jobs.'},
+ {row:27,cat:'plumbing',slug:'tap-shower-fitting',name:'Tap / shower fitting replacement',label:'soon',price:'£110',model:'From price, parts extra',mode:'contractor',desc:'Replacing taps and shower fittings, with parts quoted separately. No gas work.'},
+ {row:28,cat:'plumbing',slug:'toilet-leak-repair',name:'Toilet flush / leak repair',label:'soon',price:'£125',model:'From price, parts extra',mode:'contractor',desc:'Fixing flush problems and minor leaks, with a written quote before work.'},
+ {row:29,cat:'plumbing',slug:'drain-blockage',name:'Drain blockage – basic',label:'soon',price:'£120',model:'From price, access exclusions apply',mode:'contractor',desc:'Clearing basic blockages in sinks, showers and baths.'},
+ {row:30,cat:'electrical',slug:'light-socket-replacement',name:'Light fitting / socket replacement',label:'approval',price:null,model:'Not yet offered',mode:'gated',desc:'Replacing light fittings and sockets. Only by qualified electricians, once approvals are in place.'},
+ {row:31,cat:'electrical',slug:'electrical-fault-diagnosis',name:'Electrical fault diagnosis',label:'approval',price:null,model:'Not yet offered',mode:'gated',desc:'Finding the cause of electrical faults. Only by qualified electricians, once approvals are in place.'},
+ {row:32,cat:'gas',slug:'boiler-gas-appliance',name:'Boiler / gas appliance work',label:'approval',price:null,model:'Not offered',mode:'gated',desc:'Boiler and gas appliance work must be carried out by Gas Safe registered engineers. Everkind does not currently offer it.'},
+ {row:33,cat:'appliance',slug:'washer-dishwasher-diagnosis',name:'Washing machine / dishwasher diagnosis',label:'soon',price:'£85',model:'Callout and diagnosis, parts extra',mode:'contractor',desc:'Diagnosis for washing machines and dishwashers, with repairs quoted before work.'},
+ {row:34,cat:'appliance',slug:'fridge-freezer-diagnosis',name:'Fridge / freezer diagnosis',label:'soon',price:'£95',model:'Callout and diagnosis, parts extra',mode:'contractor',desc:'Diagnosis for fridges and freezers, with repairs quoted before work.'},
+ {row:35,cat:'ac',slug:'domestic-ac-service',name:'Domestic AC service',label:'approval',price:null,model:'Not yet offered',mode:'gated',desc:'Servicing domestic air-conditioning units. Requires F-Gas certified specialists.'},
+ {row:36,cat:'pest',slug:'pest-inspection-treatment',name:'Pest inspection / treatment',label:'approval',price:null,model:'Not yet offered',mode:'gated',desc:'Inspection and treatment plans by trained specialists, with full treatment records.'},
+ {row:37,cat:'painting',slug:'room-painting',name:'Room painting',label:'planned',price:'£550',model:'From price, survey and materials agreed',mode:'contractor',desc:'Room painting with a survey, agreed materials and a written scope.'},
+ {row:38,cat:'pet',slug:'dog-walking',name:'Dog walking – 30 minutes',label:'soon',price:'£17',model:'Per walk',mode:'contractor',desc:'A 30-minute local walk by an insured pet-care provider.'},
+ {row:39,cat:'pet',slug:'pet-home-visit',name:'Pet home visit / feeding – 30 minutes',label:'soon',price:'£18',model:'Per visit',mode:'contractor',desc:'A 30-minute home visit for feeding, fresh water and company.'},
+ {row:40,cat:'pet',slug:'pet-sitting',name:'Pet sitting – 60 minutes',label:'soon',price:'£28',model:'Per visit',mode:'contractor',desc:'A 60-minute visit with play and care while you are out.'},
+ {row:41,cat:'pet',slug:'mobile-dog-grooming',name:'Mobile dog grooming',label:'planned',price:null,model:'Provider quote',mode:'contractor',desc:'Grooming at your door through established mobile groomers.'},
+ {row:42,cat:'childcare',slug:'babysitting',name:'Babysitting at child\'s home',label:'approval',price:null,model:'Not offered',mode:'gated',desc:'Childcare needs safeguarding checks and a registration review. Everkind does not currently offer it.'},
+ {row:43,cat:'childcare',slug:'nanny-daytime-childcare',name:'Nanny / daytime childcare',label:'approval',price:null,model:'Not offered',mode:'gated',desc:'Nanny and daytime childcare need registration analysis and safeguarding. Everkind does not currently offer it.'},
+ {row:44,cat:'childcare',slug:'school-collection',name:'School collection / after-school care',label:'approval',price:null,model:'Not offered',mode:'gated',desc:'School collection needs authorised-collection, safeguarding and consent processes. Everkind does not currently offer it.'}
+];
+const IMG = {1:'1522708323590-d24dbb6b0267',2:'1631049307264-da0ec9d70304',3:'1505693416388-ac5ce068fe85',4:'1586023492125-27b2c045efd7',45:'1581578731548-c64695cc6952',5:'1584622650111-993a426fbf0a',6:'1584820927498-cfe5211fd8bf',7:'1563453392212-326f5e854473',8:'1517677208171-0bc6725a3e60',9:'1562322140-8baeececf3df',10:'1522337360788-8b13dee7a37e',11:'1570172619644-dfd03ed5d881',12:'1616394584738-fc6e612e71b9',13:'1540555700478-4be289fbecef',14:'1604654894610-df63bc536371',15:'1519014816548-bf5fe059798b',16:'1519415510236-718bdfcd89c8',17:'1487412947147-5cebf100ffc2',18:'1599351431202-1e0f0137899a',19:'1503951914875-452162b0f3f1',20:'1621605815971-fbc98d665033',21:'1544161515-4ab6ce6db874',22:'1600334089648-b0d9d3028eb2',23:'1504148455328-c376907d081c',26:'1504148455328-c376907d081c',24:'1616046229478-9901c5536a45',25:'1493809842364-78817add7ffb',27:'1585704032915-c3400ca199e7',28:'1607472586893-edb57bdc0e39',29:'1556909212-d5b604d0c90d',30:'1621905251189-08b45d6a269e',31:'1544724569-5f546fd6f2b5',32:'1621905252507-b35492cc74b4',33:'1626806787461-102c1bfaaea1',34:'1571175443880-49e1d25b2bc5',35:'1560185007-cde436f6a4d0',36:'1632935190508-bd46801c14af',37:'1562259949-e8e7689d7828',38:'1548199973-03cce0bbc87b',39:'1514888286974-6c03e2ca1dba',40:'1573865526739-10659fec78a5',41:'1516734212186-a967f81ad0d7',42:'1503454537195-1dcabb73ffb9',43:'1587654780291-39c9404d746b',44:'1503676260728-1c00da094a0b'};
+const imgSrc = s => 'images/'+IMG[s.row]+'.jpg';
+const LABELS = {
+  now:{t:'Available now',cls:'l-now',ic:'check',meaning:'Book in supported London postcodes.'},
+  soon:{t:'Coming soon',cls:'l-soon',ic:'clock',meaning:'Planned for an upcoming launch phase.'},
+  planned:{t:'Planned',cls:'l-planned',ic:'cal',meaning:'Part of Everkind\'s longer-term offering.'},
+  approval:{t:'Subject to approval',cls:'l-approval',ic:'shield',meaning:'Needs regulatory or compliance approval. Not currently provided.'}
+};
+const catOf = id => CATS.find(c=>c.id===id);
+const cards = S.filter(s=>!s.hiddenCard);
+const chip = l => `<span class="chip ${LABELS[l].cls}">${svg(LABELS[l].ic)}${LABELS[l].t}</span>`;
+const tone = id => 't'+(CATS.findIndex(c=>c.id===id)%4);
+function priceText(s){
+  if(s.slug==='instant-clean') return '<span class="price">Hourly rate</span>';
+  if(s.label==='now') return `<span class="price tnum">${s.flatpack?'From ':''}${s.price}</span>`;
+  if(s.label==='soon') return `<span class="price dim tnum">Proposed from ${s.price}</span>`;
+  return '<span class="price dim">Price not yet set</span>';
+}
+function serviceCard(s){
+  const c = catOf(s.cat);
+  return `<a class="card" href="#svc-${s.slug}">
+    <div class="tile has-img ${tone(s.cat)}"><img src="${imgSrc(s)}" alt="" loading="lazy">${chip(s.label)}</div>
+    <div class="card-body">
+      <span class="cat">${c.name}${s.addition?' · Everkind service':''}</span>
+      <h3>${s.name}</h3>
+      <p class="desc">${s.desc}</p>
+      ${s.flatpack?'<p class="desc"><b style="color:var(--forest)">Includes:</b> Flat-pack assembly option</p>':''}
+      <div class="card-foot">${priceText(s)}<span class="arrow">View details →</span></div>
+    </div></a>`;
+}
+
+/* ---------- Shared chrome ---------- */
+const logo = (cls='') => `<a class="logo ${cls}" href="#home" aria-label="Everkind home"><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="#00A82D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M12 20c-3.5-1.5-5-4-5-7 3 0 5 2 5 5 0-3 2-5 5-5 0 3-1.5 5.5-5 7z"/></svg><span>Everkind</span></a>`;
+const publicNav = () => `<header class="nav"><div class="wrap">${logo()}
+  <nav class="nav-links" aria-label="Main"><a href="#services">Services</a><a href="#svc-instant-clean">Instant Clean</a><a href="#home-hosts">For hosts</a><a href="#home-how">How it works</a></nav>
+  <div class="nav-cta"><a class="btn btn-secondary btn-sm" href="#customer">Sign in</a><a class="btn btn-primary btn-sm" href="#services">Book</a><button class="menu-btn" aria-label="Open menu" data-toast="Menu: full-screen navigation on mobile (preview only)">${svg('menu')}</button></div>
+</div></header>`;
+const footer = () => `<footer class="footer"><div class="wrap">
+  <div>${logo()}<p style="margin-top:12px;max-width:300px">Home and personal services for London, from everyday cleaning to home maintenance, beauty and beyond.</p></div>
+  <div><h4>Services</h4><ul><li><a href="#services">Explore all services</a></li><li><a href="#svc-instant-clean">Instant Clean</a></li><li><a href="#svc-short-let-1-bed">Short-let cleaning</a></li><li><a href="#svc-furniture-assembly">Furniture assembly</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#home-hosts">For hosts &amp; property managers</a></li><li><a href="#home">About</a></li><li><a href="#home">Become a professional</a></li><li><a href="#home">Contact</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="#home">Terms</a></li><li><a href="#home">Privacy</a></li><li><a href="#home">Cookies</a></li><li><a href="#home">Cancellation policy</a></li></ul></div>
+  <p class="legal">Photos from Unsplash, used under the Unsplash License, for illustration only. Operating hours 8:00am–8:00pm. Prices shown are proposed London prices including VAT where applicable. This is a design preview.</p>
+</div></footer>`;
+
+/* ---------- Homepage ---------- */
+function home(){
+  const avail = cards.filter(s=>s.label==='now' && !['short-let-2-bed','short-let-3-bed','short-let-studio'].includes(s.slug));
+  return publicNav() + `
+  <section class="hero"><div class="wrap">
+    <div>
+      <p class="eyebrow">Home &amp; personal services · London</p>
+      <h1 style="margin-top:16px">Everything your home needs. One place.</h1>
+      <p class="lede">From everyday cleaning to home maintenance, beauty and beyond, discover services designed around your life.</p>
+      <form class="finder" id="finder" role="search"><label for="q-home" class="sr" style="position:absolute;left:-9999px">Search services</label>
+        <input id="q-home" placeholder="What do you need? e.g. haircut, shelves, cleaning">
+        <button class="btn btn-primary" type="submit">Find services</button></form>
+      <div class="hero-meta"><span>${svg('clock')}Open 8am–8pm, every day</span><span>${svg('shield')}Vetted, insured professionals</span><span>${svg('card')}Card held, charged after the job</span></div>
+      <p style="margin-top:22px"><a class="link" href="#services">Explore all services →</a></p>
+    </div>
+    <div class="hero-art" >
+      <img class="scene" src="images/1600210492486-724fe5c67fb0.jpg" alt="A bright, tidy living room with sofa and plants">
+      <div class="float-card fc-2"><div class="small" style="color:var(--muted);font-size:12px">Furniture assembly <span class="sample">Sample</span></div><div class="t" style="margin-top:2px">Request received</div><div style="color:var(--muted)">We're finding a professional</div></div>
+      <div class="float-card fc-1"><div class="small" style="color:var(--muted);font-size:12px">Instant Clean <span class="sample">Sample</span></div><div class="t" style="margin-top:2px">Cleaner arriving in approximately 35 minutes</div><div style="color:var(--muted);font-size:12.5px">Arrival times are estimates and may change.</div></div>
+      <span class="photo-note">Photo: Unsplash</span>
+    </div>
+  </div></section>
+
+  <section class="ic-band" aria-labelledby="ic-h"><div class="wrap">
+    <div>
+      <p class="eyebrow">Instant Clean</p>
+      <h2 id="ic-h">Guests this evening and no time to tidy? We'll come to you.</h2>
+      <p class="sub">Book an equipped Everkind cleaner by the hour. Pick the chores that matter most and we'll work through them in your order of priority.</p>
+      <div class="ic-actions"><a class="btn btn-light btn-lg" href="#svc-instant-clean">Book Instant Clean</a><a class="btn btn-ghost-light btn-lg" href="#svc-instant-clean">What's included</a></div>
+    </div>
+    <div class="ic-photo"><img src="images/1527515637462-cff94eecc1ac.jpg" alt="Vacuuming confetti off a carpet after a party" loading="lazy"></div>
+    <div class="ic-points">
+      <div class="ic-point">${svg('clock')}<div><b>Estimated arrival shown before you book</b><br><span style="color:#CCCCCC">Based on which cleaners are on duty nearby. Estimates may change.</span></div></div>
+      <div class="ic-point">${svg('pound')}<div><b>Billed by the hour, 1-hour minimum</b><br><span style="color:#CCCCCC">See your total before you confirm. Extra time only with your approval.</span></div></div>
+      <div class="ic-point">${svg('sparkle')}<div><b>Everyday chores, fully equipped</b><br><span style="color:#CCCCCC">Tidying, dishes, kitchen, bathroom, floors, dusting, beds and bins.</span></div></div>
+    </div>
+  </div></section>
+
+  <section class="section"><div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">Available now</p><h2>Book today in our launch area</h2><p>Everkind's own team handles cleaning, hair, nails and barbering. Vetted independent professionals handle handyman jobs.</p></div><a class="link" href="#services">See every service →</a></div>
+    <div class="cards">${avail.map(serviceCard).join('')}${serviceCard(S.find(s=>s.slug==='short-let-1-bed'))}</div>
+  </div></section>
+
+  <section class="section" style="background:var(--ivory-2);border-block:1px solid var(--line)"><div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">Explore all services</p><h2>One place for your whole home</h2><p>See what's available now and what's on the way. Register your interest and we'll let you know when a service launches near you.</p></div><a class="btn btn-primary" href="#services">Explore all services</a></div>
+    <div class="cat-grid">${CATS.map(c=>{const list=cards.filter(s=>s.cat===c.id);const n=list.filter(s=>s.label==='now').length;const lab=n?`${n} available now`:LABELS[list[0].label].t;
+      return `<a class="cat-tile" href="#services" data-cat="${c.id}"><span class="ico t3">${svg(c.icon)}</span><span><span class="nm">${c.name}</span><br><span class="ct">${list.length} service${list.length>1?'s':''} · ${lab}</span></span></a>`}).join('')}</div>
+  </div></section>
+
+  <section class="section" id="home-how"><div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">How it works</p><h2>Simple to book. Clear at every step.</h2></div></div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Choose a service</h3><p>Enter your postcode, pick a service and see the price and what's included.</p></div>
+      <div class="step"><div class="n">2</div><h3>Book with a card hold</h3><p>We reserve the amount on your card. Nothing is charged until the job is done.</p></div>
+      <div class="step"><div class="n">3</div><h3>We arrive and get it done</h3><p>You'll see an estimated arrival time or window and updates as things change.</p></div>
+    </div>
+    <div class="note-box">
+      <div><b>Everkind team services</b>Cleaning, hair, nails and barbering are confirmed instantly when a time slot is free.</div>
+      <div><b>Independent professionals</b>Handyman jobs start as a request and are confirmed as soon as a vetted professional accepts.</div>
+      <div><b>Instant Clean</b>Confirmed instantly when an on-duty cleaner is available, with an estimated arrival time.</div>
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:0"><div class="wrap">
+    <div class="section-head"><div><p class="eyebrow">Why Everkind</p><h2>Care you can check</h2></div></div>
+    <div class="trust">
+      <div>${svg('users')}<h3>Our own trained team</h3><p>Cleaners, stylists and barbers are employed and trained by Everkind.</p></div>
+      <div>${svg('shield')}<h3>Vetted professionals</h3><p>Independent professionals pass identity, reference and insurance checks before joining.</p></div>
+      <div>${svg('pound')}<h3>Clear prices</h3><p>See the price and what's included before you book. Extras need your approval.</p></div>
+      <div>${svg('key')}<h3>Careful with your home</h3><p>Access codes are encrypted and shown only to your assigned professional.</p></div>
+    </div>
+  </div></section>
+
+  <section class="hosts" id="home-hosts"><div class="wrap">
+    <div><p class="eyebrow">For hosts &amp; property managers</p><h2>Turnovers handled between every stay</h2>
+      <p style="color:var(--muted);margin-top:14px;max-width:520px">Create a business account, save all your properties with access and linen notes, and book cleans for each one. See upcoming and completed jobs by property.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px"><button class="btn btn-primary" data-toast="Business sign-up (preview only)">Create business account</button><button class="btn btn-secondary" data-toast="Enquiry form (preview only)">Talk to us</button></div></div>
+    <div class="price-list" aria-label="Short-let turnover prices">
+      ${S.filter(s=>s.slug.startsWith('short-let')).map(s=>`<div class="price-row"><span>${s.name.replace('Short-let / Airbnb turnover clean – ','Turnover clean · ')}</span><span class="price tnum">${s.price}</span></div>`).join('')}
+      <div class="price-row"><span style="color:var(--muted);font-size:14px">Proposed launch prices incl. VAT</span><a class="link" href="#svc-short-let-1-bed">Details →</a></div>
+    </div>
+  </div></section>
+
+  <section class="section faq"><div class="wrap" style="max-width:860px">
+    <div class="section-head"><div><p class="eyebrow">Questions</p><h2>Good to know</h2></div></div>
+    <details><summary>When am I charged?</summary><p>We place a hold on your card when you book and charge it after the job is completed. If a booking is cancelled within the policy or can't be fulfilled, the hold is released.</p></details>
+    <details><summary>How accurate are arrival times?</summary><p>Arrival times are estimates based on the schedule and typical travel time between postcodes. They may change, and we'll update you if they do. We don't track professionals' locations.</p></details>
+    <details><summary>What hours do you work?</summary><p>All services run from 8:00am to 8:00pm, every day. Bookings must finish by 8:00pm.</p></details>
+    <details><summary>Why can't I book some services yet?</summary><p>Some services are coming soon or planned. Others, like gas work, electrical work and childcare, need specific registrations and approvals first. You can register your interest on each service page.</p></details>
+  </div></section>
+  ${footer()}
+  <div class="sticky-book"><a class="btn btn-primary" href="#services">Book a service</a></div>`;
+}
+
+/* ---------- Explore all services ---------- */
+let exState = {q:'', label:'all'};
+function explore(){
+  const counts = l => cards.filter(s=>l==='all'||s.label===l).length;
+  return publicNav() + `
+  <div class="wrap explore-head">
+    <p class="eyebrow">Explore all services</p>
+    <h1 style="margin-top:12px">Everything your home needs. One place.</h1>
+    <p class="lede">Browse every service Everkind offers today and plans to offer. Only services marked <b>Available now</b> can be booked.</p>
+    <div class="search-row">
+      <label class="field grow" for="q">${svg('search')}<input id="q" type="search" placeholder="Search e.g. boiler, haircut, dog walking" value="${exState.q}" autocomplete="off"></label>
+      <label class="field pc" for="pc">${svg('pin')}<input id="pc" placeholder="Postcode (optional)" autocomplete="postal-code"></label>
+    </div>
+    <div class="filters" role="group" aria-label="Filter by availability">
+      ${['all','now','soon','planned','approval'].map(l=>`<button class="fchip" data-label="${l}" aria-pressed="${exState.label===l}">${l==='all'?'All services':LABELS[l].t}<span class="c">${counts(l)}</span></button>`).join('')}
+    </div>
+    <div class="label-key">${Object.keys(LABELS).map(l=>`<div>${chip(l)}<br>${LABELS[l].meaning}</div>`).join('')}</div>
+  </div>
+  <div class="wrap explore-body">
+    <nav class="cat-nav" aria-label="Categories">${CATS.map(c=>`<a href="#services" data-jump="${c.id}">${c.name}<span>${cards.filter(s=>s.cat===c.id).length}</span></a>`).join('')}</nav>
+    <div id="results"></div>
+  </div>
+  ${footer()}`;
+}
+function renderResults(){
+  const q = exState.q.trim().toLowerCase();
+  const match = s => (exState.label==='all'||s.label===exState.label) && (!q || (s.name+' '+s.desc+' '+catOf(s.cat).name+' '+(s.slug==='boiler-gas-appliance'?'boiler gas heating':'')+(s.flatpack?' flat-pack flatpack ikea':'')).toLowerCase().includes(q));
+  let html='';
+  CATS.forEach(c=>{
+    const list = cards.filter(s=>s.cat===c.id && match(s));
+    if(!list.length) return;
+    html += `<section class="cat-section" id="cat-${c.id}"><h2>${c.name}</h2><p class="cdesc">${c.desc}</p><div class="cards">${list.map(serviceCard).join('')}</div></section>`;
+  });
+  document.getElementById('results').innerHTML = html || `<div class="empty"><p style="font-weight:600;color:var(--charcoal)">No services match "${exState.q.replace(/</g,'&lt;')}"</p><p style="margin-top:6px">Try a broader word, or clear the filter.</p></div>`;
+}
+
+/* ---------- Service detail ---------- */
+function serviceDetail(slug){
+  const s = S.find(x=>x.slug===slug) || S.find(x=>x.slug==='instant-clean');
+  const c = catOf(s.cat);
+  const who = s.mode==='employed' ? 'An Everkind-employed, trained team member' : s.mode==='contractor' ? 'A vetted independent professional' : 'Only appropriately qualified and registered professionals';
+  const how = s.slug==='instant-clean' ? 'Confirmed instantly when an on-duty cleaner is available' : s.label!=='now' ? 'Not yet bookable' : s.mode==='employed' ? 'Confirmed instantly when a time slot is free' : 'Request first, confirmed when a professional accepts';
+  let incl = [], excl = [];
+  if(s.slug==='instant-clean'){
+    incl=['General tidying','Washing dishes, including loading and unloading the dishwasher','Kitchen: accessible surfaces, worktops, hob and sink','Bathroom: toilets, sinks, taps, mirrors, showers and baths','Vacuuming and mopping','Dusting accessible furniture and household surfaces','Making beds','Emptying household bins'];
+    excl=['Ovens, inside fridges or cupboards','Windows, carpets or upholstery','Laundry','Heavy soiling, mould or biohazards','Work at height'];
+  } else if(s.flatpack){
+    incl=['Furniture assembly: furniture that is not supplied as a boxed flat-pack kit','Flat-pack assembly: boxed, self-assembly furniture','Tidy-up of packaging into one place'];
+    excl=['Wall fixing beyond simple anti-tip brackets (book Picture / shelf hanging)','Electrical or plumbing connections','Disposal of packaging off-site'];
+  } else if(s.mode==='gated'){
+    incl=['Information about how this service is regulated','Register interest, with no obligation'];
+    excl=['Everkind does not currently provide this service','No bookings, quotes or prices are offered'];
+  } else {
+    incl=[s.desc,'Price and scope confirmed before work begins'];
+    excl=['Anything outside the agreed scope without your approval'];
+  }
+  const tickList = (arr, yes) => `<ul class="ticks ${yes?'yes':'no'}">${arr.map(t=>`<li>${svg(yes?'check':'x')}<span>${t}</span></li>`).join('')}</ul>`;
+
+  let panel = '';
+  if(s.slug==='instant-clean'){
+    const tasks = ['General tidying','Washing dishes','Kitchen cleaning','Bathroom cleaning','Vacuuming and mopping','Dusting','Making beds','Emptying bins'];
+    panel = `<aside class="panel" aria-label="Book Instant Clean">
+      <h3>Book Instant Clean</h3>
+      <p class="small" style="margin-top:4px">Billed by the hour · 1-hour minimum · 8am–8pm</p>
+      <span class="lbl">Choose your tasks <span style="font-weight:400;color:var(--muted)">(in order of priority)</span></span>
+      <div class="tasks" id="ic-tasks">${tasks.map((t,i)=>`<label class="task"><input type="checkbox" id="task-${i}" ${i<3?'checked':''}><span>${t}</span><span class="ord"></span></label>`).join('')}</div>
+      <span class="lbl">Hours</span>
+      <div class="seg" id="ic-hours" role="group" aria-label="Hours">${[1,1.5,2,3,4].map(h=>`<button type="button" data-h="${h}" aria-pressed="${h===2}">${h}h</button>`).join('')}</div>
+      <span class="lbl">When</span>
+      <div class="seg" role="group" aria-label="When"><button type="button" aria-pressed="true" data-when>As soon as possible</button><button type="button" aria-pressed="false" data-when>Later today</button></div>
+      <div class="notice n-info">${svg('clock')}<span><b>Estimated arrival: approximately 35 minutes</b> <span class="sample">Sample</span><br>Arrival times are estimates and may change.</span></div>
+      <div class="total"><span>Total for <span id="ic-h">2</span> hours<br><span class="small">Hourly rate set by Everkind</span></span><span class="big tnum" id="ic-total">£— <span class="sample">Sample rate</span></span></div>
+      <p class="small" style="margin-top:10px">Your cleaner works through your selected tasks in priority order within the time booked. We can't guarantee every task will be completed in the time chosen.</p>
+      <button class="btn btn-primary btn-lg" data-toast="Preview only: no booking is made and no card is held.">Continue to book</button>
+    </aside>`;
+  } else if(s.flatpack){
+    panel = `<aside class="panel" aria-label="Request furniture assembly">
+      <h3>Request furniture assembly</h3>
+      <p class="small" style="margin-top:4px">Done by a vetted independent professional</p>
+      <span class="lbl">What are we assembling?</span>
+      <label class="opt"><input type="radio" name="fa" id="fa-1" checked><span><span class="on">Furniture assembly</span><br><span class="od">Furniture not supplied as a boxed flat-pack kit. £65 for the first hour; any extra time needs your approval.</span></span></label>
+      <label class="opt"><input type="radio" name="fa" id="fa-2"><span><span class="on">Flat-pack assembly</span><br><span class="od">Boxed, self-assembly furniture. £65 per hour, 1-hour minimum.</span></span></label>
+      <div class="notice n-info">${svg('users')}<span><b>How confirmation works</b><br>You'll get "Request received" straight away. Your booking is confirmed when a professional accepts, and we'll tell you their name and arrival window.</span></div>
+      <div class="total"><span>From</span><span class="big tnum">£65</span></div>
+      <button class="btn btn-primary btn-lg" data-toast="Preview only: no request is sent and no card is held.">Send request</button>
+    </aside>`;
+  } else if(s.label==='now'){
+    const isContractor = s.mode==='contractor';
+    panel = `<aside class="panel" aria-label="Book ${s.name}">
+      <h3>${isContractor?'Request':'Book'} this service</h3>
+      <div class="big tnum">${s.price}</div><p class="small">${s.model} · incl. VAT</p>
+      <div class="notice n-info">${svg(isContractor?'users':'cal')}<span>${isContractor?'Confirmed once a vetted professional accepts your request.':'Confirmed instantly when a time slot is free. You\'ll see a 1-hour arrival window.'}</span></div>
+      <div class="form-row"><label for="pc-b">Postcode</label><input class="input" id="pc-b" placeholder="e.g. SW11 1AA"></div>
+      <button class="btn btn-primary btn-lg" data-toast="Preview only: no booking is made.">${isContractor?'Send request':'See available times'}</button>
+    </aside>`;
+  } else {
+    const gated = s.label==='approval';
+    panel = `<aside class="panel" aria-label="Register interest">
+      <h3>${gated?'Register interest':'Notify me when available'}</h3>
+      ${s.label==='soon'?`<div class="big tnum" style="font-size:22px">Proposed from ${s.price}</div><p class="small">Price may change before launch</p>`:''}
+      ${gated?`<div class="notice n-gate">${svg('shield')}<span>${s.cat==='gas'?'Gas work may only be carried out by Gas Safe registered businesses and engineers.':s.cat==='childcare'?'Childcare involves safeguarding, DBS checks and possible Ofsted registration.':'This work needs specific qualifications and certification.'} <b>Everkind does not currently provide this service.</b> It will only be offered once the required approvals are in place.</span></div>`:`<div class="notice n-info">${svg('clock')}<span>${LABELS[s.label].meaning} We don't have a launch date yet.</span></div>`}
+      <form id="interest" novalidate>
+        <div class="form-row"><label for="ie">Email</label><input class="input" id="ie" type="email" placeholder="you@example.com"></div>
+        <div class="form-row"><label for="ipc">Postcode <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input class="input" id="ipc" placeholder="e.g. SW4"></div>
+        <label class="check"><input type="checkbox" id="ic1"><span>Email me when ${s.name.toLowerCase()} becomes available in my area. I can unsubscribe at any time. See our Privacy Policy.</span></label>
+        <label class="check"><input type="checkbox" id="ic2"><span>Also send me occasional Everkind news (optional).</span></label>
+        <button class="btn btn-primary btn-lg" type="submit">${gated?'Register interest':'Notify me'}</button>
+      </form>
+    </aside>`;
+  }
+
+  return publicNav() + `<div class="wrap">
+    <p class="crumbs"><a href="#home">Home</a> / <a href="#services">All services</a> / ${c.name}</p>
+    <div class="svc">
+      <div style="min-width:0">
+        ${chip(s.label)}
+        <h1>${s.name}</h1>
+        <p class="lede">${s.desc}</p>
+        <div class="tile svc-tile has-img ${tone(s.cat)}"><img src="${imgSrc(s)}" alt="${s.name}"></div><p class="credit" style="margin-top:8px">Illustrative photo from Unsplash</p>
+        <div class="facts">
+          <div class="fact"><div class="k">Who does the work</div><div class="v">${who}</div></div>
+          <div class="fact"><div class="k">How booking works</div><div class="v">${how}</div></div>
+          <div class="fact"><div class="k">Hours</div><div class="v">8:00am–8:00pm, every day</div></div>
+        </div>
+        <div class="block"><h2>${s.mode==='gated'?'What this page offers':'What\'s included'}</h2>${tickList(incl,true)}</div>
+        <div class="block"><h2>${s.mode==='gated'?'What we don\'t do':'Not included'}</h2>${tickList(excl,false)}</div>
+        ${s.label==='now'?`<div class="block"><h2>Before you book</h2><p style="color:var(--muted);max-width:640px">Free cancellation up to 24 hours before your booking. After that a fee may apply, shown before you confirm. We hold your card when you book and charge it after the job.</p></div>`:''}
+        <div class="block"><h2>Other services</h2><div style="display:flex;flex-wrap:wrap;gap:8px">${['instant-clean','furniture-assembly','regular-domestic-cleaning','boiler-gas-appliance','mens-haircut'].filter(x=>x!==s.slug).map(x=>{const o=S.find(y=>y.slug===x);return `<a class="fchip" href="#svc-${x}" style="text-decoration:none">${o.name}</a>`}).join('')}</div></div>
+      </div>
+      ${panel}
+    </div>
+  </div>${footer()}`;
+}
+
+/* ---------- App shell ---------- */
+let custSec = 'overview', adminSec = 'overview', selBooking = 0;
+function shell(role, items, current, body){
+  return `<div class="app">
+    <aside class="side" aria-label="${role} navigation">${logo()}<p class="role">${role}</p>
+      ${items.map(i=>`<button data-sec="${i.id}" aria-current="${i.id===current}">${svg(i.icon)}<span>${i.t}</span>${i.badge?`<span class="badge">${i.badge}</span>`:''}</button>`).join('')}
+      <div class="spacer"></div>
+      <button data-toast="Help centre (preview only)">${svg('alert')}<span>Help</span></button>
+    </aside>
+    <div class="main">
+      <div class="topbar"><label class="field" for="app-q">${svg('search')}<input id="app-q" placeholder="${role==='Admin'?'Search bookings, customers, workers':'Search your bookings'}"></label><span style="flex:1"></span>
+        <button class="icon-btn" aria-label="Notifications" data-toast="Notifications (preview only)">${svg('bell')}</button><span class="avatar" aria-hidden="true">${role==='Admin'?'AD':'SJ'}</span></div>
+      <div class="content">${body}</div>
+    </div>
+    <nav class="tabbar" aria-label="${role} navigation">${items.slice(0,5).map(i=>`<button data-sec="${i.id}" aria-current="${i.id===current}">${svg(i.icon)}${i.t.split(' ')[0]}</button>`).join('')}</nav>
+  </div>`;
+}
+
+const BOOKINGS = [
+  {svc:'Instant Clean · 2 hours',when:'Today · Booked 13:05',status:['s-live','On the way'],eta:'Cleaner arriving in approximately 25 minutes',who:'Amira (Everkind cleaner)',addr:'Flat 4, 12 Example Road',price:'Hourly rate × 2',steps:[['done','Booked and confirmed','13:05'],['done','Cleaner assigned','13:06'],['now','On the way','13:20 · estimate updated'],['','Arrived',''],['','Completed','']]},
+  {svc:'Furniture assembly',when:'Sat 14 Nov · Preferred 10:00–12:00',status:['s-info','Finding professional'],eta:'We\'ll confirm once a professional accepts',who:'To be assigned',addr:'Flat 4, 12 Example Road',price:'From £65',steps:[['done','Request received','Today 11:42'],['now','Finding a professional','Contractors notified'],['','Confirmed',''],['','Completed','']]},
+  {svc:'Men\'s haircut',when:'Tue 17 Nov',status:['s-ok','Confirmed'],eta:'Expected between 2:00pm and 3:00pm',who:'Daniel (Everkind barber)',addr:'Flat 4, 12 Example Road',price:'£45',steps:[['done','Booked and confirmed','Mon 9 Nov'],['','On the way',''],['','Completed','']]}
+];
+function customer(){
+  const items=[{id:'overview',t:'Overview',icon:'home'},{id:'bookings',t:'Bookings',icon:'cal'},{id:'addresses',t:'Addresses',icon:'pin'},{id:'payments',t:'Payment methods',icon:'card'},{id:'interests',t:'Notifications & interests',icon:'bell'},{id:'settings',t:'Settings',icon:'gear'}];
+  const b = BOOKINGS[selBooking];
+  const detail = `<div class="box" aria-live="polite"><h2>${b.svc}<span class="chip ${b.status[0]}">${b.status[1]}</span></h2>
+      <div class="eta">${svg('clock')}<div><div style="font-weight:600">${b.eta}</div><div class="disclaim">Arrival times are estimates and may change.</div></div></div>
+      <ol class="timeline" style="margin-top:16px">${b.steps.map(s=>`<li class="${s[0]}"><div>${s[1]}</div><div class="w">${s[2]}</div></li>`).join('')}</ol>
+      <dl class="kv"><dt>Professional</dt><dd>${b.who}</dd><dt>Address</dt><dd>${b.addr}</dd><dt>Price</dt><dd class="tnum">${b.price}</dd><dt>Payment</dt><dd>Card held, charged after completion</dd></dl>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-secondary btn-sm" data-toast="Preview only">Reschedule</button><button class="btn btn-sm" style="color:var(--err);border-color:var(--line)" data-toast="Preview only">Cancel booking</button></div>
+    </div>`;
+  const list = `<div class="box"><h2>Upcoming <span class="sample">Sample</span></h2><div class="row-list" role="listbox" aria-label="Upcoming bookings">${BOOKINGS.map((x,i)=>`<div class="row" role="option" tabindex="0" data-b="${i}" aria-selected="${i===selBooking}"><span><span class="t">${x.svc}</span><br><span class="s">${x.when}</span></span><span class="chip ${x.status[0]}">${x.status[1]}</span></div>`).join('')}</div>
+    <h2 style="margin-top:18px">Past</h2><div class="row"><span><span class="t">Manicure</span><br><span class="s">Sat 31 Oct</span></span><span class="chip s-neutral">Completed</span></div></div>`;
+  let body;
+  if(custSec==='overview'){
+    body = `<div class="page-title"><div><h1>Good afternoon, Sam</h1><p>Here's what's happening with your bookings. <span class="sample">Sample data</span></p></div><a class="btn btn-primary" href="#services">Book a service</a></div>
+    <div class="grid-2">
+      <div class="box"><h2>Next booking<span class="chip s-live">On the way</span></h2>
+        <div style="font-size:18px;font-weight:600">Instant Clean · 2 hours</div><div class="s" style="color:var(--muted);font-size:14px">Today · Flat 4, 12 Example Road</div>
+        <div class="eta" style="margin-top:14px"><span class="num tnum">~25 min</span><span>Cleaner arriving in approximately 25 minutes</span></div>
+        <p class="disclaim">Arrival times are estimates and may change. We'll update you if anything changes.</p>
+        <p style="font-size:14px;margin-top:12px"><b>Your task priorities:</b> 1. Kitchen cleaning · 2. Bathroom cleaning · 3. Vacuuming and mopping</p>
+      </div>
+      <div class="box"><h2>Action needed</h2>
+        <div class="att" style="padding-top:0"><span class="dot" style="background:var(--warn)"></span><div><div class="t">Approve extra time?</div><div class="s">Instant Clean: your cleaner suggests 30 more minutes to finish the bathroom.</div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary btn-sm" data-toast="Preview only: no charge is approved.">Approve</button><button class="btn btn-secondary btn-sm" data-toast="Preview only">Decline</button></div></div></div>
+        <div class="att"><span class="dot" style="background:var(--info)"></span><div><div class="t">Furniture assembly request</div><div class="s">We're finding a professional. We'll let you know as soon as one accepts.</div></div></div>
+      </div>
+    </div>
+    <div class="grid-2b">${list}${detail}</div>`;
+  } else if(custSec==='bookings'){
+    body = `<div class="page-title"><div><h1>Bookings</h1><p>Upcoming and past bookings with status and arrival estimates.</p></div></div><div class="grid-2b">${list}${detail}</div>`;
+  } else {
+    const t = items.find(i=>i.id===custSec).t;
+    body = `<div class="page-title"><div><h1>${t}</h1></div></div><div class="placeholder">${t} uses the same layout: a list on the left and details on the right. It isn't designed in this preview.</div>`;
+  }
+  return shell('Customer', items, custSec, body);
+}
+
+function admin(){
+  const items=[{id:'overview',t:'Overview',icon:'grid'},{id:'attention',t:'Needs attention',icon:'alert',badge:'3'},{id:'bookings',t:'Bookings',icon:'cal'},{id:'instant',t:'Instant Clean',icon:'sparkle'},{id:'people',t:'Staff & contractors',icon:'users'},{id:'accounts',t:'Customers & businesses',icon:'building'},{id:'catalogue',t:'Catalogue',icon:'list'},{id:'payments',t:'Payments & refunds',icon:'pound'},{id:'settings',t:'Settings',icon:'gear'}];
+  let body;
+  if(adminSec==='overview'){
+    const k=[['Bookings today','14','vs 11 last Sat'],['Contractor fill rate','86%','last 7 days'],['Avg. time to accept','12 min','last 7 days'],['Instant Clean: est. vs actual arrival','+4 min','avg difference'],['Cleaner utilisation','64%','target 68% (workbook)'],['Complaints / rework','1','last 30 days']];
+    body = `<div class="page-title"><div><h1>Operations overview</h1><p>Saturday 7 November · All figures are <span class="sample">Sample</span> and do not reflect real activity.</p></div><button class="btn btn-secondary btn-sm" data-toast="Export (preview only)">Export</button></div>
+    <div class="kpis">${k.map(x=>`<div class="kpi"><div class="k">${x[0]}</div><div class="v tnum">${x[1]}</div><div class="d">${x[2]}</div></div>`).join('')}</div>
+    <div class="grid-2">
+      <div class="box"><h2>Needs attention<span class="chip s-warn">3 open</span></h2>
+        <div class="att" style="padding-top:0"><span class="dot" style="background:var(--warn)"></span><div><div class="t">Escalated request: Curtain rail installation</div><div class="s">No contractor accepted in 30 minutes · SW4 · Sun 15 Nov</div></div><button class="btn btn-secondary btn-sm" data-toast="Manual assignment (preview only)">Assign</button></div>
+        <div class="att"><span class="dot" style="background:var(--err)"></span><div><div class="t">Instant Clean not acknowledged</div><div class="s">Cleaner didn't tap "On my way" within 5 minutes · reassigning</div></div><button class="btn btn-secondary btn-sm" data-toast="Preview only">Review</button></div>
+        <div class="att"><span class="dot" style="background:var(--info)"></span><div><div class="t">Document expiring</div><div class="s">Public liability certificate · contractor · expires in 21 days</div></div><button class="btn btn-secondary btn-sm" data-toast="Preview only">Open</button></div>
+      </div>
+      <div class="box"><h2>Instant Clean on duty<span class="disclaim">Status only · no location tracking</span></h2>
+        <div class="crew">
+          <div class="crew-row"><span class="avatar">AM</span><span>Amira<br><span class="disclaim">SW11 · on a job until ~15:20</span></span><span class="chip s-live">On a job</span></div>
+          <div class="crew-row"><span class="avatar">JO</span><span>Joseph<br><span class="disclaim">SW4 · on duty</span></span><span class="chip s-ok">Free</span></div>
+          <div class="crew-row"><span class="avatar">PK</span><span>Priya<br><span class="disclaim">SW8 · on the way · est. 14:40</span></span><span class="chip s-info">On the way</span></div>
+          <div class="crew-row"><span class="avatar">LT</span><span>Lena<br><span class="disclaim">Off duty</span></span><span class="chip s-neutral">Off</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="box"><h2>Today's bookings <span class="sample">Sample</span></h2><div class="tbl-wrap"><table>
+      <thead><tr><th>Time</th><th>Service</th><th>Customer</th><th>Assigned to</th><th>Type</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="tnum">10:00–12:00</td><td>Turnover clean · 2 bedroom</td><td>Harbour Lets (business)</td><td>Amira</td><td>Team</td><td><span class="chip s-ok">Completed</span></td></tr>
+        <tr><td class="tnum">13:05</td><td>Instant Clean · 2h</td><td>S. Jones</td><td>Amira</td><td>Team</td><td><span class="chip s-live">On the way</span></td></tr>
+        <tr><td class="tnum">14:00–15:00</td><td>Women's haircut</td><td>R. Patel</td><td>Daniel</td><td>Team</td><td><span class="chip s-ok">Confirmed</span></td></tr>
+        <tr><td class="tnum">15:00–17:00</td><td>Furniture assembly · Flat-pack</td><td>M. Okafor</td><td>—</td><td>Contractor</td><td><span class="chip s-info">Finding professional</span></td></tr>
+        <tr><td class="tnum">16:30–17:30</td><td>Picture / shelf hanging</td><td>T. Evans</td><td>K. Mensah</td><td>Contractor</td><td><span class="chip s-ok">Confirmed</span></td></tr>
+      </tbody></table></div></div>`;
+  } else if(adminSec==='catalogue'){
+    body = `<div class="page-title"><div><h1>Catalogue</h1><p>45 service records across 14 categories. Changes publish to the website automatically.</p></div><button class="btn btn-primary btn-sm" data-toast="Add service (preview only)">Add service</button></div>
+    <div class="box"><div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Service</th><th>Category</th><th>Label</th><th>Price</th><th>Compliance</th><th>Bookable</th></tr></thead>
+      <tbody>${S.slice().sort((a,b)=>a.row-b.row).map(s=>`<tr><td class="tnum">${s.row}</td><td>${s.name}${s.hiddenCard?' <span class="disclaim">(option in Furniture assembly)</span>':''}${s.addition?' <span class="disclaim">(Everkind addition)</span>':''}</td><td>${catOf(s.cat).name}</td><td>${chip(s.label)}</td><td class="tnum">${s.slug==='instant-clean'?'Hourly · set rate':s.price||'—'}</td><td>${s.mode==='gated'?'<span class="chip l-approval">Approval required</span>':'<span class="disclaim">Standard checks</span>'}</td><td><button class="toggle" role="switch" aria-label="Bookable: ${s.name}" aria-checked="${s.label==='now'}" ${s.label!=='now'?'disabled title="Only Available now services can be activated"':''} data-toast="Preview only: catalogue changes are not saved."></button></td></tr>`).join('')}</tbody>
+    </table></div></div>`;
+  } else {
+    const t = items.find(i=>i.id===adminSec).t;
+    body = `<div class="page-title"><div><h1>${t}</h1></div></div><div class="placeholder">${t} uses the same layout: tables with search and filters, and a detail panel. It isn't designed in this preview. Try <b>Overview</b> or <b>Catalogue</b>.</div>`;
+  }
+  return shell('Admin', items, adminSec, body);
+}
+
+/* ---------- Router ---------- */
+const view = document.getElementById('view');
+function route(){
+  const h = (location.hash||'#home').slice(1);
+  let key = 'home';
+  if(h==='home'||h==='home-hosts'||h==='home-how'){ view.innerHTML = home(); key='home'; if(h!=='home'){ requestAnimationFrame(()=>document.getElementById(h)?.scrollIntoView()); } else window.scrollTo(0,0); }
+  else if(h==='services'){ view.innerHTML = explore(); renderResults(); key='services'; window.scrollTo(0,0); }
+  else if(h.startsWith('svc-')){ view.innerHTML = serviceDetail(h.slice(4)); key='svc-instant-clean'; window.scrollTo(0,0); }
+  else if(h==='customer'){ view.innerHTML = customer(); key='customer'; window.scrollTo(0,0); }
+  else if(h==='admin'){ view.innerHTML = admin(); key='admin'; window.scrollTo(0,0); }
+  else { view.innerHTML = home(); }
+  document.querySelectorAll('.views a').forEach(a=>a.setAttribute('aria-current', a.getAttribute('href')==='#'+key ? 'page':'false'));
+  updateIC();
+}
+window.addEventListener('hashchange', route);
+
+/* ---------- Interactions ---------- */
+let toastT;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
+function updateIC(){
+  const box = document.getElementById('ic-tasks'); if(!box) return;
+  let n=0; box.querySelectorAll('.task').forEach(l=>{const c=l.querySelector('input'); l.querySelector('.ord').textContent = c.checked ? 'Priority '+(++n) : '';});
+}
+document.addEventListener('click', e=>{
+  const t = e.target.closest('[data-toast]'); if(t){ e.preventDefault(); toast(t.dataset.toast); return; }
+  const f = e.target.closest('.fchip[data-label]'); if(f){ exState.label=f.dataset.label; document.querySelectorAll('.fchip[data-label]').forEach(b=>b.setAttribute('aria-pressed', b===f)); renderResults(); return; }
+  const j = e.target.closest('[data-jump]'); if(j){ e.preventDefault(); exState.label='all'; exState.q=''; const qi=document.getElementById('q'); if(qi) qi.value=''; document.querySelectorAll('.fchip[data-label]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.label==='all')); renderResults(); document.getElementById('cat-'+j.dataset.jump)?.scrollIntoView({behavior:'smooth'}); return; }
+  const ct = e.target.closest('.cat-tile[data-cat]'); if(ct){ e.preventDefault(); location.hash='services'; setTimeout(()=>document.getElementById('cat-'+ct.dataset.cat)?.scrollIntoView(),60); return; }
+  const hb = e.target.closest('#ic-hours button'); if(hb){ document.querySelectorAll('#ic-hours button').forEach(b=>b.setAttribute('aria-pressed', b===hb)); document.getElementById('ic-h').textContent = hb.dataset.h; return; }
+  const wb = e.target.closest('[data-when]'); if(wb){ wb.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', b===wb)); return; }
+  const sec = e.target.closest('[data-sec]'); if(sec){ if(location.hash==='#admin'){ adminSec=sec.dataset.sec; } else { custSec=sec.dataset.sec; } view.innerHTML = location.hash==='#admin'?admin():customer(); return; }
+  const row = e.target.closest('.row[data-b]'); if(row){ selBooking=+row.dataset.b; view.innerHTML = customer(); return; }
+});
+document.addEventListener('keydown', e=>{ const row=e.target.closest?.('.row[data-b]'); if(row && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); selBooking=+row.dataset.b; view.innerHTML=customer(); }});
+document.addEventListener('change', e=>{ if(e.target.closest('#ic-tasks')) updateIC(); });
+document.addEventListener('input', e=>{ if(e.target.id==='q'){ exState.q=e.target.value; renderResults(); }});
+document.addEventListener('submit', e=>{
+  e.preventDefault();
+  if(e.target.id==='finder'){ exState.q=document.getElementById('q-home').value; location.hash='services'; return; }
+  if(e.target.id==='interest'){
+    const ok = document.getElementById('ic1').checked && /.+@.+\..+/.test(document.getElementById('ie').value);
+    toast(ok ? 'Preview only: your interest is not saved.' : 'Enter an email and tick the first box to register interest.');
+  }
+});
+route();
+</script>

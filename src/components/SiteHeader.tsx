@@ -1,0 +1,47 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Logo } from "./Logo";
+
+const NAV = [
+  { href: "/services", label: "Explore all services" },
+  { href: "/services/cleaning/instant-clean", label: "Instant Clean" },
+  { href: "/for-hosts", label: "For hosts" },
+  { href: "/how-it-works", label: "How it works" },
+];
+
+export function SiteHeader() {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+      <div className="wrap flex items-center justify-between gap-4 py-4">
+        <Logo />
+        <nav aria-label="Main" className="hidden items-center gap-7 text-[15px] lg:flex">
+          {NAV.map((n) => (
+            <Link key={n.href} href={n.href} className="hover:text-green">{n.label}</Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link href="/services" className="btn-primary btn-sm">Book</Link>
+          <button type="button" className="inline-grid h-10 w-11 place-items-center rounded-ctl border border-line lg:hidden" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}>
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+      {open && (
+        <nav id="mobile-nav" aria-label="Mobile" className="border-t border-line bg-white lg:hidden">
+          <ul className="wrap grid gap-1 py-3">
+            {NAV.map((n) => (
+              <li key={n.href}>
+                <Link href={n.href} onClick={() => setOpen(false)} className="block rounded-ctl px-2 py-3 text-lg hover:bg-surface">{n.label}</Link>
+              </li>
+            ))}
+            <li><Link href="/contact" onClick={() => setOpen(false)} className="block rounded-ctl px-2 py-3 text-lg hover:bg-surface">Contact</Link></li>
+          </ul>
+        </nav>
+      )}
+    </header>
+  );
+}

@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-white text-text font-sans antialiased; font-size: 16px; line-height: 1.6; }
+  h1, h2, h3 { text-wrap: balance; }
+  :focus-visible { outline: 2px solid #00842A; outline-offset: 2px; border-radius: 6px; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-site px-4 sm:px-6; }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.12em] text-green; }
+  .btn { @apply inline-flex h-11 items-center justify-center gap-2 rounded-ctl px-5 text-[15px] font-semibold transition-colors; }
+  .btn-primary { @apply btn bg-green text-white hover:bg-green-hover; }
+  .btn-secondary { @apply btn border border-green text-green hover:bg-green-tint; }
+  .btn-accent { @apply btn bg-green-accent text-ink hover:bg-[#19B841]; }
+  .btn-ghost-dark { @apply btn border border-white/40 text-white hover:border-white; }
+  .btn-sm { @apply h-9 px-3.5 text-sm; }
+  .btn-lg { @apply h-[52px] px-6 text-base; }
+  .link { @apply font-semibold text-green hover:underline underline-offset-4; }
+  .input { @apply h-11 w-full rounded-ctl border border-line bg-white px-3 text-[15px] outline-none focus:border-green focus:ring-2 focus:ring-green-tint; }
+  .label { @apply mb-1.5 block text-sm font-semibold; }
+  .card { @apply rounded-card border border-line bg-white; }
+  .display { @apply font-display font-medium text-text; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
