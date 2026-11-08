@@ -3,8 +3,9 @@ import Link from "next/link";
 import { AvailabilityChip } from "./AvailabilityChip";
 import { getCategory, priceLabel, serviceHref, type Service } from "@/lib/catalogue";
 
+
 export function ServiceCard({ service }: { service: Service }) {
-  const cat = getCategory(service.category);
+  const categoryName = service.categoryName ?? getCategory(service.category)?.name;
   const muted = service.availability !== "available_now";
   return (
     <Link href={serviceHref(service)} className="card group flex flex-col overflow-hidden transition duration-500 ease-out hover:-translate-y-1 hover:border-[#D6D6D6] hover:shadow-[0_22px_40px_-26px_rgba(0,0,0,0.5)]">
@@ -13,7 +14,7 @@ export function ServiceCard({ service }: { service: Service }) {
         <AvailabilityChip availability={service.availability} className="absolute left-3 top-3" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <span className="text-xs font-medium text-text-muted">{cat?.name}{service.everkindAddition ? " · Everkind service" : ""}</span>
+        <span className="text-xs font-medium text-text-muted">{categoryName}{service.everkindAddition ? " · Everkind service" : ""}</span>
         <h3 className="text-[17px] font-semibold leading-snug">{service.name}</h3>
         <p className="text-sm leading-relaxed text-text-muted">{service.summary}</p>
         {service.options && <p className="text-sm text-text-muted"><span className="font-semibold text-green">Includes:</span> flat-pack assembly option</p>}

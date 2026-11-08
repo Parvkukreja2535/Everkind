@@ -3,25 +3,25 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { ServiceCard } from "./ServiceCard";
-import { AVAILABILITY, CATEGORIES, LISTED_SERVICES, getCategory, type Availability } from "@/lib/catalogue";
+import { AVAILABILITY, type Availability, type Category, type Service } from "@/lib/catalogue";
 
 const FILTERS: (Availability | "all")[] = ["all", "available_now", "coming_soon", "planned", "subject_to_approval"];
 
-export function ExploreServices({ initialQuery = "" }: { initialQuery?: string }) {
+export function ExploreServices({ initialQuery = "", categories, services }: { initialQuery?: string; categories: Category[]; services: Service[] }) {
   const [q, setQ] = useState(initialQuery);
   const [filter, setFilter] = useState<Availability | "all">("all");
 
   const matches = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return LISTED_SERVICES.filter((s) => {
+    return services.filter((s) => {
       if (filter !== "all" && s.availability !== filter) return false;
       if (!needle) return true;
-      const hay = [s.name, s.summary, getCategory(s.category)?.name, ...(s.keywords ?? [])].join(" ").toLowerCase();
+      const hay = [s.name, s.summary, s.categoryName, ...(s.keywords ?? [])].join(" ").toLowerCase();
       return hay.includes(needle);
     });
-  }, [q, filter]);
+  }, [q, filter, services]);
 
-  const count = (f: Availability | "all") => LISTED_SERVICES.filter((s) => f === "all" || s.availability === f).length;
+  const count = (f: Availability | "all") => services.filter((s) => f === "all" || s.availability === f).length;
 
   return (
     <>
@@ -41,12 +41,12 @@ export function ExploreServices({ initialQuery = "" }: { initialQuery?: string }
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[200px_1fr]">
         <nav aria-label="Categories" className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:block lg:self-start lg:overflow-visible">
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <a key={c.slug} href={`#cat-${c.slug}`} className="block shrink-0 whitespace-nowrap rounded-lg border border-line px-3 py-1.5 text-sm hover:bg-surface lg:border-0 lg:py-2">{c.name}</a>
           ))}
         </nav>
         <div>
-          {CATEGORIES.map((c) => {
+          {categories.map((c) => {
             const list = matches.filter((s) => s.category === c.slug);
             if (!list.length) return null;
             return (

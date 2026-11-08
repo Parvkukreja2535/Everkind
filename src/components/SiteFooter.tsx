@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 
 const COLS = [
   { title: "Services", links: [["Explore all services", "/services"], ["Instant Clean", "/services/cleaning/instant-clean"], ["Short-let cleaning", "/services/cleaning"], ["Handyman", "/services/handyman"]] },
-  { title: "Company", links: [["For hosts & property managers", "/for-hosts"], ["How it works", "/how-it-works"], ["About Everkind", "/about"], ["Contact", "/contact"]] },
+  { title: "Company", links: [["For hosts & property managers", "/for-hosts"], ["How it works", "/how-it-works"], ["About Everkind", "/about"], ["Work with Everkind", "/work-with-everkind"], ["Contact", "/contact"]] },
   { title: "Legal", links: [["Terms", "/legal/terms"], ["Privacy", "/legal/privacy"], ["Cookies", "/legal/cookies"], ["Cancellation policy", "/legal/cancellation"]] },
 ];
 

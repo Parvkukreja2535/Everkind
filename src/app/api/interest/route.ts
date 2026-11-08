@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getService } from "@/lib/catalogue";
+import { getServiceBySlug } from "@/lib/catalogue-data";
 import { normalisePostcode } from "@/lib/coverage";
-import { db } from "@/lib/server/db";
+import { supabaseService } from "@/lib/supabase/admin";
 
 const Body = z.object({
   serviceSlug: z.string().max(80),
@@ -18,10 +18,10 @@ export async function POST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ message: "Enter your email and tick the first box to register interest." }, { status: 400 });
   const b = parsed.data;
-  const service = getService(b.serviceSlug);
+  const service = await getServiceBySlug(b.serviceSlug);
   if (!service || service.availability === "available_now") return NextResponse.json({ message: "This service is already bookable." }, { status: 400 });
 
-  const supabase = db();
+  const supabase = supabaseService();
   if (!supabase) return NextResponse.json({ message: "Sign-ups aren't switched on yet. Please check back soon." }, { status: 503 });
 
   const { error } = await supabase.from("service_interest").insert({
