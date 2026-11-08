@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 
@@ -14,13 +14,20 @@ const NAV = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+    <header className={`sticky top-0 z-40 border-b bg-white/90 backdrop-blur-md transition-[box-shadow,border-color] duration-300 ${scrolled ? "border-line shadow-[0_6px_24px_-18px_rgba(0,0,0,0.35)]" : "border-transparent"}`}>
       <div className="wrap flex items-center justify-between gap-4 py-4">
         <Logo />
         <nav aria-label="Main" className="hidden items-center gap-7 text-[15px] lg:flex">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="hover:text-green">{n.label}</Link>
+            <Link key={n.href} href={n.href} className="nav-link transition-colors hover:text-green">{n.label}</Link>
           ))}
         </nav>
         <div className="flex items-center gap-2">

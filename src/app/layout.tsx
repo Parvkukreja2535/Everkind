@@ -19,7 +19,11 @@ export const viewport: Viewport = { themeColor: "#1A1A1A", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" suppressHydrationWarning>
+      <head>
+        {/* Turns on scroll animations only when JavaScript runs; content is visible without it. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('motion')" }} />
+      </head>
       <body className="flex min-h-screen flex-col">
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-ctl focus:bg-white focus:px-4 focus:py-2">
           Skip to content
