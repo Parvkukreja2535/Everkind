@@ -29,3 +29,51 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+/* ------------------------------------------------------------------
+   Motion (homepage polish). Everything below is opt-in via the `motion`
+   class, which a tiny inline script adds to <html>. Without JavaScript,
+   or with "reduce motion" switched on, all content shows immediately.
+   ------------------------------------------------------------------ */
+:root { --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1); --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
+  /* Scroll reveals */
+  .motion [data-reveal] { transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out), clip-path 1.2s var(--ease-out); transition-delay: var(--reveal-delay, 0ms); }
+  .motion [data-reveal="up"]:not([data-revealed]) { opacity: 0; transform: translate3d(0, 22px, 0); }
+  .motion [data-reveal="fade"]:not([data-revealed]) { opacity: 0; }
+  .motion [data-reveal="image"] { clip-path: inset(0 round 18px); }
+  .motion [data-reveal="image"]:not([data-revealed]) { clip-path: inset(8% 6% 8% 6% round 18px); opacity: 0.001; }
+  .motion [data-reveal="image"] img { transition: transform 1.6s var(--ease-out); transition-delay: var(--reveal-delay, 0ms); }
+  .motion [data-reveal="image"]:not([data-revealed]) img { transform: scale(1.08); }
+  .motion [data-reveal="line"] { transform-origin: left center; transition: transform 1.1s var(--ease-out); transition-delay: var(--reveal-delay, 0ms); }
+  .motion [data-reveal="line"]:not([data-revealed]) { transform: scaleX(0); }
+
+  /* Hero entrance (above the fold, so it runs on load rather than on scroll) */
+  @keyframes ek-rise { from { opacity: 0; transform: translate3d(0, 18px, 0); } to { opacity: 1; transform: none; } }
+  @keyframes ek-settle { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+  .motion .hero-rise { animation: ek-rise 1s var(--ease-out) both; animation-delay: var(--hero-delay, 0ms); }
+  .motion .hero-settle { animation: ek-settle 1.6s var(--ease-out) both; animation-delay: 150ms; }
+
+  /* Crossfade slides: long, soft dissolve with a slow drift on the visible photo */
+  .crossfade-slide { opacity: 0; transition: opacity 1.6s var(--ease-soft); }
+  .crossfade-slide[data-active] { opacity: 1; }
+  .crossfade-slide .crossfade-img { transform: scale(1.06); transition: transform 9s linear; }
+  .crossfade-slide[data-active] .crossfade-img { transform: scale(1); }
+
+  /* Buttons: a gentle lift, never a jump */
+  .btn { transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease, transform 0.3s var(--ease-out); }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -14px rgba(0, 0, 0, 0.45); }
+  .btn:active { transform: translateY(0); box-shadow: none; }
+}
+
+/* Static fallbacks when motion is reduced: first slide only, no drift */
+.crossfade-slide { opacity: 0; }
+.crossfade-slide[data-active] { opacity: 1; }
+
+/* Navigation links: underline that draws in from the left */
+.nav-link { position: relative; }
+.nav-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1.5px; background: #00A82D; transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease-out); }
+.nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); }
