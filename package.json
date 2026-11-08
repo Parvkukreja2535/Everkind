@@ -8,12 +8,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:db": "node supabase/tests/rls.test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "5.2.6",
     "@fontsource/playfair-display": "5.2.6",
-    "@supabase/supabase-js": "2.57.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
     "lucide-react": "0.540.0",
     "next": "16.4.2",
     "react": "19.1.1",
@@ -22,6 +24,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.16",
     "@eslint/eslintrc": "3.3.1",
     "@types/node": "22.18.0",
     "@types/react": "19.1.12",

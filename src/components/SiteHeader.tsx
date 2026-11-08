@@ -12,7 +12,7 @@ const NAV = [
   { href: "/how-it-works", label: "How it works" },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ account }: { account: { firstName: string; href: string } | null }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -31,6 +31,11 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          {account ? (
+            <Link href={account.href} className="nav-link hidden text-[15px] hover:text-green sm:inline">My account</Link>
+          ) : (
+            <Link href="/login" className="nav-link hidden text-[15px] hover:text-green sm:inline">Log in</Link>
+          )}
           <Link href="/services" className="btn-primary btn-sm">Book</Link>
           <button type="button" className="inline-grid h-10 w-11 place-items-center rounded-ctl border border-line lg:hidden" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}>
             {open ? <X size={20} /> : <Menu size={20} />}
@@ -45,6 +50,8 @@ export function SiteHeader() {
                 <Link href={n.href} onClick={() => setOpen(false)} className="block rounded-ctl px-2 py-3 text-lg hover:bg-surface">{n.label}</Link>
               </li>
             ))}
+            <li><Link href={account ? account.href : "/login"} onClick={() => setOpen(false)} className="block rounded-ctl px-2 py-3 text-lg hover:bg-surface">{account ? "My account" : "Log in or create an account"}</Link></li>
+            <li><Link href="/work-with-everkind" onClick={() => setOpen(false)} className="block rounded-ctl px-2 py-3 text-lg hover:bg-surface">Work with Everkind</Link></li>
             <li><Link href="/contact" onClick={() => setOpen(false)} className="block rounded-ctl px-2 py-3 text-lg hover:bg-surface">Contact</Link></li>
           </ul>
         </nav>

@@ -9,6 +9,10 @@ export type Workforce = "employed" | "contractor" | "regulated";
 export type PriceType = "fixed" | "hourly" | "first_hour" | "from" | "callout" | "not_priced";
 
 export interface Category {
+  id?: string;
+  imageUrl?: string | null;
+  isActive?: boolean;
+  sortOrder?: number;
   slug: string;
   name: string;
   workbookName: string;
@@ -16,6 +20,7 @@ export interface Category {
 }
 
 export interface ServiceOption {
+  id?: string;
   slug: string;
   name: string;
   description: string;
@@ -23,9 +28,20 @@ export interface ServiceOption {
   pricePence: number;
   priceType: PriceType;
   priceNote: string;
+  minHours?: number | null;
 }
 
 export interface Service {
+  /** Database id (absent for the built-in fallback catalogue). */
+  id?: string;
+  categoryName?: string;
+  minHours?: number | null;
+  hoursOptions?: number[] | null;
+  extraHourPence?: number | null;
+  durationMinutes?: number;
+  sortOrder?: number;
+  isActive?: boolean;
+  complianceApproved?: boolean;
   workbookRow: number;
   slug: string;
   category: string;

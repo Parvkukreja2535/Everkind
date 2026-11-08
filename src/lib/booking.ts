@@ -1,6 +1,6 @@
 // Booking rules shared by the booking form (browser) and the booking API (server).
 // The server recalculates everything; the browser copy is only for showing totals early.
-import { getService, INSTANT_CLEAN_HOURS, type Service } from "./catalogue";
+import type { Service } from "./catalogue";
 import { SITE } from "./site";
 
 /** Typical job length used to keep bookings inside 8am–8pm (workbook: 2.25h average clean). */
@@ -21,11 +21,13 @@ export const DURATION_MINUTES: Record<string, number> = {
 export const NOTICE_MINUTES = { employed: 120, contractor: 24 * 60 };
 
 export function isBookable(s: Service | undefined): s is Service {
-  return !!s && !s.optionOf && s.availability === "available_now" && s.pricePence != null;
+  return (
+    !!s && !s.optionOf && s.isActive !== false && s.availability === "available_now" && s.pricePence != null &&
+    s.priceType !== "not_priced" && (s.workforce !== "regulated" || s.complianceApproved === true)
+  );
 }
 
 export interface PriceInput {
-  serviceSlug: string;
   optionSlug?: string;
   hours?: number;
 }
@@ -34,31 +36,54 @@ export interface PriceResult {
   ok: true;
   totalPence: number;
   durationMinutes: number;
+  hours: number | null;
   description: string;
 }
 
-/** Customer-facing total in pence. Instant Clean: hourly rate × hours (requirements v1.2). */
-export function priceBooking(input: PriceInput): PriceResult | { ok: false; error: string } {
-  const service = getService(input.serviceSlug);
+const hoursLabel = (h: number) => `${h} hour${h === 1 ? "" : "s"}`;
+const validHours = (h: number, min: number, options?: number[] | null) =>
+  options?.length ? options.includes(h) : h >= min && h <= 12 && Number.isInteger(h * 2);
+
+/**
+ * Customer-facing total in pence, from the service's pricing rules (managed in the admin
+ * dashboard). The booking API always recalculates this on the server; the browser copy only
+ * shows the total early. Instant Clean: hourly rate × hours, 1-hour minimum.
+ */
+export function priceBooking(service: Service, input: PriceInput): PriceResult | { ok: false; error: string } {
   if (!isBookable(service)) return { ok: false, error: "This service can't be booked yet." };
+  const base = service.pricePence!;
 
-  if (service.slug === "instant-clean") {
-    const hours = input.hours ?? 0;
-    if (!INSTANT_CLEAN_HOURS.includes(hours)) return { ok: false, error: "Choose how many hours you need." };
-    return { ok: true, totalPence: Math.round(service.pricePence! * hours), durationMinutes: hours * 60, description: `Instant Clean, ${hours} hour${hours === 1 ? "" : "s"}` };
-  }
-
-  if (service.options) {
+  if (service.options?.length) {
     const option = service.options.find((o) => o.slug === input.optionSlug);
-    if (!option) return { ok: false, error: "Choose what you need assembled." };
-    const hours = Math.max(1, input.hours ?? 1);
-    if (!Number.isInteger(hours * 2) || hours > 8) return { ok: false, error: "Choose a valid number of hours." };
-    // Furniture: first hour quoted, extra time only with approval (charged later). Flat-pack: hourly.
-    const billable = option.priceType === "hourly" ? hours : 1;
-    return { ok: true, totalPence: option.pricePence * billable, durationMinutes: hours * 60, description: `${option.name}, ${hours} hour${hours === 1 ? "" : "s"} estimated` };
+    if (!option) return { ok: false, error: "Choose an option." };
+    const min = option.minHours ?? service.minHours ?? 1;
+    const hours = input.hours ?? min;
+    if (!validHours(hours, Math.min(min, 1), service.hoursOptions)) return { ok: false, error: "Choose a valid number of hours." };
+    if (option.priceType === "hourly") {
+      const billable = Math.max(hours, min);
+      return { ok: true, totalPence: Math.round(option.pricePence * billable), durationMinutes: hours * 60, hours, description: `${option.name}, ${hoursLabel(hours)}` };
+    }
+    // First-hour pricing: the first hour is charged; extra time is quoted and needs approval.
+    const extra = option.priceType === "first_hour" && service.extraHourPence ? service.extraHourPence * Math.max(0, hours - 1) : 0;
+    return { ok: true, totalPence: option.pricePence + extra, durationMinutes: hours * 60, hours, description: `${option.name}, ${hoursLabel(hours)} estimated` };
   }
 
-  return { ok: true, totalPence: service.pricePence!, durationMinutes: DURATION_MINUTES[service.slug] ?? 60, description: service.name };
+  if (service.priceType === "hourly") {
+    const min = service.minHours ?? 1;
+    const hours = input.hours ?? min;
+    if (hours < min) return { ok: false, error: `The minimum booking is ${hoursLabel(min)}.` };
+    if (!validHours(hours, min, service.hoursOptions)) return { ok: false, error: "Choose how many hours you need." };
+    return { ok: true, totalPence: Math.round(base * hours), durationMinutes: hours * 60, hours, description: `${service.name}, ${hoursLabel(hours)}` };
+  }
+
+  if (service.priceType === "first_hour") {
+    const hours = input.hours ?? 1;
+    if (!validHours(hours, 1, service.hoursOptions)) return { ok: false, error: "Choose a valid number of hours." };
+    const extra = service.extraHourPence ? service.extraHourPence * Math.max(0, hours - 1) : 0;
+    return { ok: true, totalPence: base + extra, durationMinutes: hours * 60, hours, description: `${service.name}, ${hoursLabel(hours)} estimated` };
+  }
+
+  return { ok: true, totalPence: base, durationMinutes: service.durationMinutes ?? DURATION_MINUTES[service.slug] ?? 60, hours: null, description: service.name };
 }
 
 /** Current London wall-clock time as { date: "YYYY-MM-DD", minutes } so rules follow UK time. */
@@ -121,4 +146,22 @@ export function bookingReference() {
   crypto.getRandomValues(bytes);
   for (const b of bytes) ref += alphabet[b % alphabet.length];
   return ref;
+}
+
+/** Converts a London wall-clock date + time (e.g. "2026-07-01", "14:00") to a UTC ISO string, handling BST. */
+export function londonToUtcIso(date: string, time: string) {
+  const [y, mo, d] = date.split("-").map(Number);
+  const [h, mi] = time.split(":").map(Number);
+  let guess = Date.UTC(y, mo - 1, d, h, mi);
+  for (let i = 0; i < 2; i++) {
+    const shown = londonNow(new Date(guess));
+    const shownMs = Date.parse(`${shown.date}T00:00:00Z`) + shown.minutes * 60000;
+    guess += Date.UTC(y, mo - 1, d, h, mi) - shownMs;
+  }
+  return new Date(guess).toISOString();
+}
+
+/** True when a booking (London date/time) starts within the next `hours` hours. */
+export function startsWithinHours(date: string, time: string | null, hours: number, now = new Date()) {
+  return Date.parse(londonToUtcIso(date, time ?? "08:00")) - now.getTime() < hours * 3600 * 1000;
 }
